@@ -1,0 +1,162 @@
+# ============================================
+# 🧠 EDUVISION — Django + YOLO + OpenCV Project
+# ============================================
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+build/
+dist/
+.eggs/
+.Python
+
+# ---- Virtual environment ----
+venv/
+env/
+ENV/
+.venv/
+*.env
+*.venv
+
+# ---- Django ----
+*.log
+*.pot
+*.pyc
+db.sqlite3
+local_settings.py
+/staticfiles/
+staticfiles/
+static_root/
+tmp/
+temp/
+
+# ---- Django cache & compiled files ----
+*.mo
+*.pot
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+celerybeat-schedule
+celerybeat.pid
+
+# ---- Media & uploads ----
+media/
+uploads/
+flashcards/
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.tiff
+*.svg
+
+# ---- YOLO & AI model weights ----
+*.pt
+*.onnx
+*.weights
+runs/
+models/
+checkpoints/
+*.engine
+*.trt
+*.bin
+*.cfg
+*.xml
+*.json
+*.npz
+*.npy
+
+# ---- Jupyter / Notebooks ----
+*.ipynb_checkpoints
+.ipynb_checkpoints/
+notebooks/
+__pycache__/
+
+# ---- IDEs & Editors ----
+.vscode/
+.idea/
+.spyproject/
+*.sublime-project
+*.sublime-workspace
+
+# ---- System files ----
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ---- Environment & Secrets ----
+.env
+.env.local
+.env.development
+.env.production
+*.key
+*.pem
+secrets.json
+
+# ---- Pipenv / Poetry ----
+Pipfile
+Pipfile.lock
+poetry.lock
+*.toml
+
+# ---- Test / Coverage ----
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.pytest_cache/
+pytestdebug.log
+
+# ---- Temporary files ----
+*.tmp
+*.bak
+*.swp
+*.swo
+*.orig
+*.rej
+
+# ---- Logs ----
+*.log
+*.out
+*.err
+logs/
+log/
+
+
+
+# ---- Python virtual environments adicionales ----
+bin/
+Scripts/
+Include/
+Lib/
+
+# ---- Django migrations (si no quieres subirlas) ----
+# migrations/
+
+# ---- Compilaciones temporales de OpenCV ----
+__pycache__/
+*.lock
+*.dat
+*.yaml
+
+# ---- Archivos de ejecución local ----
+*.pid
+*.sock
+*.log
+*.bak
+ 
