@@ -500,6 +500,198 @@
 
     <div id="message"></div>
 
+    <script>
+    let cameraActive = false;
+    let frameLoop;
+    const addedObjects = new Set();
+
+    // 🚀 Activar cámara
+    async function activateCamera() {
+        try {
+            const response = await fetch("/api/vision/start/");
+            if (!response.ok) throw new Error("No se pudo iniciar la cámara");
+
+            cameraActive = true;
+            document.getElementById("cameraInactive").style.display = "none";
+            document.getElementById("videoFeed").style.display = "block";
+            document.getElementById("liveBadge").style.display = "flex";
+            document.getElementById("deactivateBtn").style.display = "flex";
+            document.getElementById("detectBtn").style.display = "flex";
+
+            fetchFrameLoop();
+            startFetchingObjects();
+            showMessage("✅ Cámara activada", "#10b981");
+        } catch (err) {
+            console.error("❌ Error al iniciar cámara:", err);
+            showMessage("❌ Error al iniciar la cámara", "#ef4444");
+        }
+    }
+
+    // 🛑 Desactivar cámara
+    async function deactivateCamera() {
+        cameraActive = false;
+        clearTimeout(frameLoop);
+        await fetch("/api/vision/stop/");
+        document.getElementById("cameraInactive").style.display = "flex";
+        document.getElementById("videoFeed").style.display = "none";
+        document.getElementById("liveBadge").style.display = "none";
+        document.getElementById("deactivateBtn").style.display = "none";
+        document.getElementById("detectBtn").style.display = "none";
+        showMessage("🔴 Cámara desactivada", "#6b7280");
+    }
+
+    // 📸 Actualizar frames
+    async function fetchFrameLoop() {
+        if (!cameraActive) return;
+        try {
+            const res = await fetch("/api/vision/frame/");
+            const data = await res.json();
+            if (data.frame) {
+                document.getElementById("videoFeed").src = data.frame;
+            }
+        } catch (e) {
+            console.warn("⚠️ Error obteniendo frame:", e);
+        }
+        frameLoop = setTimeout(fetchFrameLoop, 150);
+    }
+
+    // 🔄 Llamar detección cada 2 s
+    function startFetchingObjects() {
+        fetchObjects();
+        setInterval(() => {
+            if (cameraActive) fetchObjects();
+        }, 2000);
+    }
+
+    // 🔍 Obtener objetos detectados desde el backend
+    async function fetchObjects() {
+        if (!cameraActive) return;
+        try {
+            const res = await fetch("/api/vision/objects/");
+            const data = await res.json();
+            const container = document.getElementById("detectedObjects");
+            container.innerHTML = "";
+
+            if (data.objects && data.objects.length > 0) {
+                data.objects.forEach(obj => {
+                    const label = obj.label || obj;
+
+                    const div = document.createElement("div");
+                    div.classList.add("object-detected");
+                    div.innerHTML = `
+                        <div class="object-name">${label}</div>
+                        <div class="object-actions">
+                            <button class="btn btn-listen" onclick="speak('${label}')">
+                                <i class="fas fa-volume-up"></i> Escuchar
+                            </button>
+                            <button class="btn btn-add" onclick='addFlashcard("${label}")'>
+                                <i class="fas fa-plus"></i> Añadir
+                            </button>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            } else {
+                container.innerHTML = `
+                    <div class="no-objects">
+                        <div class="search-icon-large"><i class="fas fa-search"></i></div>
+                        <p>No hay objetos detectados</p>
+                        <small>Mueve la cámara hacia<br>objetos cercanos</small>
+                    </div>
+                `;
+            }
+        } catch (err) {
+            console.error("❌ Error obteniendo objetos:", err);
+        }
+    }
+
+    // 💾 Crear flashcard (usa el recorte real del backend)
+    async function addFlashcard(label) {
+        if (addedObjects.has(label)) {
+            showMessage("⚠️ Ya añadiste: " + label, "#eab308");
+            return;
+        }
+
+        const confirm_create = confirm(`¿Crear flashcard para "${label}"?`);
+        if (!confirm_create) return;
+
+        try {
+            const response = await fetch("/api/flashcards/add/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    palabra: label,
+                    traduccion: "Traducción pendiente"
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showMessage("✅ Flashcard creada: " + data.palabra, "#10b981");
+                addedObjects.add(label);
+                console.log("💾 Flashcard guardada:", data);
+            } else {
+                showMessage("⚠️ " + (data.error || "Error al guardar"), "#eab308");
+                console.warn("⚠️ Error en backend:", data);
+            }
+        } catch (error) {
+            console.error("❌ Error en fetch:", error);
+            showMessage("❌ Error al conectar con el servidor", "#ef4444");
+        }
+    }
+
+    // 🔁 Forzar nueva detección manual
+    function detectAgain() {
+        if (cameraActive) {
+            fetchObjects();
+            showMessage("🔄 Detectando objetos...", "#3b82f6");
+        }
+    }
+
+    // 🔊 Leer palabra detectada
+    function speak(label) {
+        const utterance = new SpeechSynthesisUtterance(label);
+        utterance.lang = "en-US";
+        speechSynthesis.speak(utterance);
+    }
+
+    // 💬 Mostrar mensajes flotantes
+    function showMessage(text, color) {
+        const msg = document.getElementById("message");
+        msg.textContent = text;
+        msg.style.background = color;
+        msg.style.color = "white";
+        msg.classList.add("show");
+        setTimeout(() => msg.classList.remove("show"), 3000);
+    }
+    </script>
+
+
+
+
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} 
+
 <script>
     let cameraActive = false;
     let frameLoop;
@@ -569,7 +761,9 @@
 
             if (data.objects && data.objects.length > 0) {
                 data.objects.forEach(obj => {
-                    const label = obj.label || obj;
+                    const label = obj.label || obj; // por compatibilidad
+                    const bbox = obj.bbox || null;  // coordenadas [x1, y1, x2, y2]
+
                     const div = document.createElement("div");
                     div.classList.add("object-detected");
                     div.innerHTML = `
@@ -578,7 +772,7 @@
                             <button class="btn btn-listen" onclick="speak('${label}')">
                                 <i class="fas fa-volume-up"></i> Escuchar
                             </button>
-                            <button class="btn btn-add" onclick="addFlashcard('${label}')">
+                            <button class="btn btn-add" onclick='addFlashcard("${label}", ${JSON.stringify(bbox)})'>
                                 <i class="fas fa-plus"></i> Añadir
                             </button>
                         </div>
@@ -599,17 +793,63 @@
         }
     }
 
-    async function addFlashcard(label) {
+
+    async function addFlashcard(label, bbox = null) {
         if (addedObjects.has(label)) {
-            showMessage("Ya añadiste: " + label, "#eab308");
+            showMessage("⚠️ Ya añadiste: " + label, "#eab308");
             return;
         }
+
         const confirm_create = confirm(`¿Crear flashcard para "${label}"?`);
         if (!confirm_create) return;
 
-        addedObjects.add(label);
-        showMessage("✅ Flashcard creada: " + label, "#10b981");
+        try {
+            // 1️⃣ Capturamos el frame actual mostrado en la cámara
+            const videoFeed = document.getElementById("videoFeed");
+            let imageBase64 = null;
+
+            if (videoFeed && videoFeed.src) {
+                const canvas = document.createElement("canvas");
+                canvas.width = videoFeed.naturalWidth || 640;
+                canvas.height = videoFeed.naturalHeight || 480;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(videoFeed, 0, 0, canvas.width, canvas.height);
+                imageBase64 = canvas.toDataURL("image/png");
+            }
+
+            // 2️⃣ Enviamos palabra, bbox y la imagen
+            const response = await fetch("/api/flashcards/add/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    palabra: label,
+                    traduccion: "Traducción pendiente",
+                    imagen: imageBase64,
+                    bbox: bbox
+                }),
+            });
+
+            // 3️⃣ Procesamos respuesta del backend
+            const data = await response.json();
+
+            if (response.ok) {
+                showMessage("✅ Flashcard creada: " + data.palabra, "#10b981");
+                addedObjects.add(label);
+                console.log("💾 Flashcard guardada:", data);
+            } else {
+                showMessage("⚠️ " + (data.error || "Error al guardar"), "#eab308");
+                console.warn("⚠️ Error en backend:", data);
+            }
+        } catch (error) {
+            console.error("❌ Error en fetch:", error);
+            showMessage("❌ Error al conectar con el servidor", "#ef4444");
+        }
     }
+
+
+
 
     function detectAgain() {
         if (cameraActive) {
@@ -632,27 +872,7 @@
         msg.classList.add("show");
         setTimeout(() => msg.classList.remove("show"), 3000);
     }
-</script>
-
-</body>
-</html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+</script> {% endcomment %}
 
 
 
