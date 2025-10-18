@@ -273,7 +273,7 @@ def mark_flashcard(request, id: int):
     """
     POST { "success": true|false }
       true  -> recordado: duplica el intervalo y programa la próxima revisión más adelante.
-      false -> olvidado : reinicia el intervalo y vuelve a estado pendiente.
+      false -> olvidado : reinicia el intervalo y vuelve a estado pendiente inmediato.
     """
     if request.method != "POST":
         return JsonResponse({"error": "Método no permitido"}, status=405)
@@ -290,24 +290,22 @@ def mark_flashcard(request, id: int):
     except Flashcard.DoesNotExist:
         raise Http404("Flashcard no encontrada")
 
-    # ✅ Lógica de repetición espaciada
     today = timezone.now().date()
+
+    # 🧠 Lógica de repetición espaciada
     if success:
+        # Recordado → se duplica el intervalo y se programa para más adelante
         f.interval = max(1, f.interval * 2)
+        f.next_review = today + timezone.timedelta(days=f.interval)
+        estado = "dominada"
     else:
+        # Olvidado → vuelve a pendiente inmediata
         f.interval = 1
-    f.next_review = today + timezone.timedelta(days=f.interval)
+        f.next_review = today
+        estado = "pendiente"
+
     f.save()
+    print(f"🔁 Flashcard '{f.palabra}' marcada como {estado} (intervalo: {f.interval} día/s)")
 
-    print(f"✅ Flashcard '{f.palabra}' marcada como {'recordada' if success else 'olvidada'}")
-
-    # Devuelve nuevo resumen actualizado
-    from django.http import JsonResponse
-    return JsonResponse({
-        "id": f.id,
-        "palabra": f.palabra,
-        "traduccion": f.traduccion,
-        "interval": f.interval,
-        "next_review": f.next_review.isoformat(),
-        "success": success
-    })
+    # 🔄 Devolvemos el resumen completo para que el dashboard se actualice automáticamente
+    return flashcards_summary(request)
