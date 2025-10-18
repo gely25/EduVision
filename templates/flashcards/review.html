@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduVision - Revisión de Flashcards</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, #6366f1 0%, #8da2fb 100%);
+      font-family: 'Poppins', sans-serif;
+      color: #2d2d44;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .top-bar {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      padding: 0 20px;
+    }
+
+    .progress-container {
+      width: 100%;
+      max-width: 900px;
+      height: 12px;
+      background: #fca5a5;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 50px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: #22c55e;
+      transition: width 0.5s ease;
+    }
+
+    .card-container {
+      position: relative;
+      width: 100%;
+      max-width: 700px;
+      margin-bottom: 40px;
+    }
+
+    .card {
+      background: #e5e7eb;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 20px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      cursor: pointer;
+      position: relative;
+      perspective: 1000px;
+      border: 3px solid #d1d5db;
+    }
+
+    .card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      transform-style: preserve-3d;
+    }
+
+    .card.flipped .card-inner {
+      transform: rotateY(180deg);
+    }
+
+    .card-front, .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    .card-front {
+      background: linear-gradient(135deg, #e5e7eb 0%, #f3f4f6 100%);
+    }
+
+    .card-back {
+      background: linear-gradient(135deg, #e5e7eb 0%, #f3f4f6 100%);
+      transform: rotateY(180deg);
+    }
+
+    .card-back img {
+      width: 140px;
+      height: 140px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      object-fit: cover;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .word {
+      font-size: 56px;
+      font-weight: 900;
+      margin-bottom: 15px;
+      letter-spacing: -1px;
+    }
+
+    .translation {
+      font-size: 24px;
+      color: #4b5563;
+      font-weight: 700;
+    }
+
+    .hint {
+      font-size: 14px;
+      color: #9ca3af;
+      position: absolute;
+      bottom: 20px;
+      font-weight: 500;
+    }
+
+    .audio-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      background: #333;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      z-index: 10;
+      backface-visibility: hidden;
+    }
+
+    .card.flipped .audio-btn {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .audio-btn:hover {
+      background: #000;
+      transform: scale(1.1);
+    }
+
+    .audio-btn i {
+      color: #fff;
+      font-size: 24px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 30px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 16px 50px;
+      border-radius: 14px;
+      font-size: 18px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .forgot {
+      background: linear-gradient(135deg, #fca5a5 0%, #f87171 100%);
+      color: white;
+    }
+
+    .forgot:hover {
+      background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 28px rgba(239, 68, 68, 0.3);
+    }
+
+    .remembered {
+      background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+      color: white;
+    }
+
+    .remembered:hover {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 28px rgba(16, 185, 129, 0.3);
+    }
+
+    .stats {
+      display: flex;
+      gap: 25px;
+      align-items: center;
+      font-size: 15px;
+    }
+
+    .stats i {
+      margin-right: 8px;
+      font-size: 18px;
+    }
+
+    #message {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #333;
+      color: white;
+      padding: 14px 28px;
+      border-radius: 12px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      font-weight: 700;
+      font-size: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      z-index: 20;
+    }
+
+    #message.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 768px) {
+      .word {
+        font-size: 40px;
+      }
+
+      .translation {
+        font-size: 18px;
+      }
+
+      button {
+        padding: 14px 35px;
+        font-size: 16px;
+      }
+
+      .buttons {
+        gap: 15px;
+      }
+
+      .top-bar {
+        flex-direction: column;
+        gap: 15px;
+        padding: 0 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+    <div>Palabras Dominadas <span id="masteredCount">0/0</span></div>
+    <div class="stats">
+      <i class="fas fa-check" style="color:#22c55e"></i><span id="okCount">0</span>
+      <i class="fas fa-pen" style="color:#eab308"></i><span id="pendingCount">0</span>
+    </div>
+  </div>
+
+  <div class="progress-container">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div class="card-container">
+    <div class="card" id="flashcard" onclick="flipCard()">
+      <button class="audio-btn" onclick="speakWord(event)">
+        <i class="fas fa-volume-up"></i>
+      </button>
+      <div class="card-inner">
+        <!-- Cara frontal (palabra en inglés) -->
+        <div class="card-front">
+          <div class="word" id="word"></div>
+          <div class="hint">Haz click para voltear la tarjeta</div>
+        </div>
+
+        <!-- Cara posterior (imagen + traducción) -->
+        <div class="card-back">
+          <img id="image" alt="Imagen del objeto" />
+          <div class="translation" id="translation"></div>
+          <div class="hint">Haz click para voltear la tarjeta</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="buttons">
+    <button class="forgot" onclick="markCard(false)">Olvidado</button>
+    <button class="remembered" onclick="markCard(true)">Recordado</button>
+  </div>
+
+  <div id="message"></div>
+
+<script>
+  let flashcards = [];
+  let queue = [];
+  let currentCard = null;
+  let mastered = 0;
+
+  async function loadFlashcards() {
+    const res = await fetch("/api/flashcards/review/");
+    flashcards = await res.json();
+    queue = [...flashcards];
+    updateStats();
+    showNextCard();
+  }
+
+  function showNextCard() {
+    const card = document.getElementById("flashcard");
+    card.classList.remove("flipped");
+
+    if (queue.length === 0) {
+    card.innerHTML = `
+        <div style="text-align:center; padding: 40px;">
+        <h2 style="color:#2d2d44; font-size: 32px; margin-bottom: 20px;">
+            🎯 ¡Has completado tu sesión de repaso!
+        </h2>
+        <p style="color:#4b5563; font-size: 16px; margin-bottom: 25px;">
+            Has dominado todas tus tarjetas por hoy. ¡Excelente trabajo!
+        </p>
+        <a href="/api/flashcards/page/" 
+            style="display:inline-block; background:#4f46e5; color:white;
+            padding:14px 28px; border-radius:12px; font-weight:700;
+            text-decoration:none; transition:all 0.2s;">
+            <i class="fa-solid fa-arrow-left"></i> Volver al Panel
+        </a>
+        </div>
+    `;
+    document.querySelector(".buttons").style.display = "none";
+    return;
+    }
+
+    currentCard = queue.shift();
+
+    document.getElementById("word").textContent = currentCard.palabra.toUpperCase();
+    document.getElementById("translation").textContent = currentCard.traduccion;
+    document.getElementById("image").src = currentCard.imagen || "";
+  }
+
+  function flipCard() {
+    const card = document.getElementById("flashcard");
+    card.classList.toggle("flipped");
+  }
+
+async function markCard(success) {
+  if (!currentCard) return;
+
+  try {
+    // ✅ Enviar al backend para actualizar next_review
+    const res = await fetch(`/api/flashcards/${currentCard.id}/mark/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ success }),
+    });
+
+    if (!res.ok) throw new Error("Error al guardar progreso");
+
+    const data = await res.json();
+    console.log("📘 Estado actualizado:", data);
+
+    if (success) {
+      mastered++;
+      showMessage("✅ Recordado");
+    } else {
+      queue.push(currentCard);
+      showMessage("🔁 Se repasará más tarde");
+    }
+
+    updateStats();
+    showNextCard();
+  } catch (err) {
+    console.error("❌ Error marcando flashcard:", err);
+    showMessage("⚠️ No se pudo guardar el progreso", "#ef4444");
+  }
+}
+
+
+  function updateStats() {
+    const total = flashcards.length;
+    const pending = total - mastered;
+    const percent = (mastered / total) * 100;
+    document.getElementById("progressBar").style.width = `${percent}%`;
+    document.getElementById("masteredCount").textContent = `${mastered}/${total}`;
+    document.getElementById("okCount").textContent = mastered;
+    document.getElementById("pendingCount").textContent = pending;
+  }
+
+  function showMessage(text) {
+    const msg = document.getElementById("message");
+    msg.textContent = text;
+    msg.classList.add("show");
+    setTimeout(() => msg.classList.remove("show"), 2500);
+  }
+
+  function speakWord(event) {
+    event.stopPropagation();
+    if (!currentCard) return;
+
+    const word = currentCard.palabra;
+    const utterance = new SpeechSynthesisUtterance(word);
+    utterance.lang = 'en-US';
+    utterance.rate = 0.9;
+    utterance.pitch = 1;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utterance);
+  }
+
+  loadFlashcards();
+</script>
+
+</body>
+</html>
+
