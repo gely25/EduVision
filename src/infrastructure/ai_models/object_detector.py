@@ -4,8 +4,48 @@ import base64
 import numpy as np
 from ultralytics import YOLO
 
-# ✅ Cargar modelo YOLOv8 (solo una vez)
-model = YOLO("yolov8n.pt")
+import os
+from ultralytics import YOLO
+
+
+import os
+from ultralytics import YOLO
+
+# --- Buscar modelo YOLO en rutas posibles ---
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+# Carpetas donde puede estar el modelo
+model_dirs = [
+    os.path.join(BASE_DIR, "runs", "detect", "train_v2", "weights"),
+    os.path.join(BASE_DIR, "runs", "detect", "train", "weights"),
+]
+
+# Buscar cualquier archivo .pt dentro de esas carpetas
+model_path = None
+for folder in model_dirs:
+    if os.path.exists(folder):
+        for file in os.listdir(folder):
+            if file.endswith(".pt"):  # Acepta best.pt, best(1).pt, last.pt, etc.
+                model_path = os.path.join(folder, file)
+                break
+    if model_path:
+        break
+
+if not model_path:
+    raise FileNotFoundError(
+        f"❌ No se encontró ningún archivo .pt en:\n" +
+        "\n".join(model_dirs)
+    )
+
+# --- Cargar modelo YOLO ---
+print(f"✅ Modelo detectado y cargado desde: {model_path}")
+model = YOLO(model_path)
+
+print("📋 Clases detectables:")
+for i, name in model.names.items():
+    print(f"   {i}: {name}")
+
+
 
 # ✅ Variables globales compartidas
 frame_lock = threading.Lock()
@@ -23,7 +63,17 @@ def detect_objects(frame):
         print("⚠️ Frame vacío, se omite detección.")
         return [], []
 
-    results = model(frame, verbose=False)
+    results = model(frame, conf=0.15, iou=0.4, verbose=False)
+    
+    # 🔍 Depuración temporal
+    for r in results:
+        if r.boxes is not None and len(r.boxes) > 0:
+            print(f"🧠 Detectadas {len(r.boxes)} cajas:")
+            for box in r.boxes:
+                print(f"   → {model.names[int(box.cls[0])]} ({float(box.conf[0]):.2f})")
+        else:
+            print("⚠️ No se detectaron objetos en este frame.")
+
     labels, boxes = [], []
 
     annotated = frame.copy()
