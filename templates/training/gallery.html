@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduVision - Galería de Entrenamiento</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #2d2d44;
+      margin: 0;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #2d2d44;
+      color: white;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    main {
+      padding: 40px;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .accordion {
+      background: white;
+      border-radius: 14px;
+      margin-bottom: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    }
+
+    .accordion-header {
+      background: #f1f1f8;
+      padding: 15px 20px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .accordion-content {
+      display: none;
+      padding: 20px;
+      background: white;
+    }
+
+    .images-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 15px;
+    }
+
+    .images-grid img {
+      width: 100%;
+      height: 130px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 2px solid #ddd;
+      transition: transform 0.2s;
+    }
+
+    .images-grid img:hover {
+      transform: scale(1.05);
+    }
+
+    button {
+      border: none;
+      border-radius: 8px;
+      padding: 8px 14px;
+      cursor: pointer;
+      font-weight: 600;
+      color: white;
+      transition: 0.3s;
+    }
+
+    .delete-btn { background: #ef4444; }
+    .delete-btn:hover { background: #dc2626; }
+
+    .add-btn { background: #3b82f6; }
+    .add-btn:hover { background: #2563eb; }
+
+    .reload-btn { background: #6366f1; padding: 12px 18px; margin-top: 25px; }
+    .reload-btn:hover { background: #4f46e5; }
+
+    a { color: #6366f1; text-decoration: none; }
+
+    #message {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background: #4f46e5;
+      color: white;
+      padding: 14px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    #message.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1><i class="fas fa-folder-open"></i> Galería del Dataset</h1>
+    <button onclick="window.location.href='/api/vision/train/page/upload/'" style="background:#3b82f6;border-radius:8px;padding:10px 16px;color:white;border:none;font-weight:600;">
+      <i class="fas fa-plus-circle"></i> Subir nuevas imágenes
+    </button>
+  </header>
+
+  <main>
+    <div id="accordionContainer"></div>
+
+    <button class="reload-btn" onclick="reloadModel()">
+      <i class="fas fa-sync-alt"></i> Entrenar / Recargar ORB
+    </button>
+  </main>
+
+  <div id="message"></div>
+
+  <script>
+    const msgBox = document.getElementById("message");
+
+    function showMessage(text, color = "#4f46e5") {
+      msgBox.textContent = text;
+      msgBox.style.background = color;
+      msgBox.classList.add("show");
+      setTimeout(() => msgBox.classList.remove("show"), 3000);
+    }
+
+    async function loadGallery() {
+      const res = await fetch("/api/vision/train/gallery/");
+      const data = await res.json();
+      const container = document.getElementById("accordionContainer");
+      container.innerHTML = "";
+
+      if (!data.length) {
+        container.innerHTML = "<p style='text-align:center;'>No hay imágenes en el dataset aún.</p>";
+        return;
+      }
+
+      data.forEach(group => {
+        const div = document.createElement("div");
+        div.classList.add("accordion");
+
+        div.innerHTML = `
+          <div class="accordion-header">
+            <span>${group.label} (${group.images.length} imágenes)</span>
+            <div>
+              <button class="add-btn" onclick="window.location.href='/api/vision/train/page/upload/'">Agregar</button>
+              <button class="delete-btn" onclick="deleteCategory('${group.label}')">Eliminar</button>
+            </div>
+          </div>
+          <div class="accordion-content">
+            <div class="images-grid">
+              ${group.images.map(img => `
+                <div>
+                  <img src="${img.url}" alt="${group.label}">
+                  <button class="delete-btn" style="width:100%;" onclick="deleteImage('${group.label}','${img.filename}')">
+                    Eliminar
+                  </button>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+
+        div.querySelector(".accordion-header").addEventListener("click", () => {
+          const content = div.querySelector(".accordion-content");
+          content.style.display = content.style.display === "block" ? "none" : "block";
+        });
+
+        container.appendChild(div);
+      });
+    }
+
+    async function deleteImage(label, filename) {
+      if (!confirm(`¿Eliminar imagen '${filename}' de '${label}'?`)) return;
+      const res = await fetch("/api/vision/train/delete/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ etiqueta: label, filename })
+      });
+      if (res.ok) showMessage("🗑️ Imagen eliminada correctamente", "#ef4444");
+      loadGallery();
+    }
+
+    async function deleteCategory(label) {
+      if (!confirm(`¿Eliminar TODAS las imágenes de '${label}'?`)) return;
+      const res = await fetch("/api/vision/train/delete/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ etiqueta: label })
+      });
+      if (res.ok) showMessage("📂 Carpeta eliminada correctamente", "#ef4444");
+      loadGallery();
+    }
+
+    async function reloadModel() {
+      showMessage("🔄 Entrenando modelo ORB...");
+      const res = await fetch("/api/vision/train/reload/", { method: "POST" });
+      const data = await res.json();
+      if (res.ok) {
+        showMessage(data.message || "✅ Modelo entrenado correctamente", "#10b981");
+        loadGallery(); // 🔁 refrescar galería
+      } else {
+        showMessage("❌ Error al entrenar: " + (data.error || "Error desconocido"), "#ef4444");
+      }
+    }
+
+    loadGallery();
+  </script>
+</body>
+</html>

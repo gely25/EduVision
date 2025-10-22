@@ -1,1184 +1,327 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduVision - Reconocimiento de Objetos</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduVision - Reconocimiento de Objetos (YOLOv11)</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            min-height: 100vh;
-            padding-bottom: 40px;
-        }
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      padding-bottom: 40px;
+      color: #2d2d44;
+    }
 
-        .navbar {
-            background: #2d2d44;
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
+    header {
+      background: #2d2d44;
+      color: white;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: white;
-            font-size: 18px;
-            font-weight: bold;
-        }
+    main {
+      padding: 40px;
+      max-width: 1100px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 30px;
+    }
 
-        .logo-icon {
-            width: 35px;
-            height: 35px;
-            background: #667eea;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
+    h1 {
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-        .nav-menu { 
-            display: flex; 
-            gap: 40px; 
-            list-style: none;
-            flex: 1;
-            justify-content: center;
-        }
+    .video-box {
+      background: white;
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
 
-        .nav-menu a { 
-            color: #b8b8d1; 
-            text-decoration: none; 
-            font-size: 15px; 
-            transition: color 0.3s; 
-            font-weight: 500;
-        }
+    .video-wrapper {
+      position: relative;
+      background: #000;
+      border-radius: 12px;
+      overflow: hidden;
+      aspect-ratio: 4/3;
+      margin-bottom: 20px;
+    }
 
-        .nav-menu a:hover { color: white; }
+    #videoFeed {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
 
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: white;
-            cursor: pointer;
-        }
+    .camera-inactive {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: white;
+      text-align: center;
+    }
 
-        .user-avatar {
-            width: 35px;
-            height: 35px;
-            background: #667eea;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 14px;
-        }
+    .camera-icon {
+      font-size: 60px;
+      opacity: 0.5;
+      margin-bottom: 15px;
+    }
 
-        .hero {
-            background: rgba(255,255,255,0.95);
-            margin: 30px 40px;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-        }
+    .btn {
+      background: #6366f1;
+      color: white;
+      border: none;
+      padding: 14px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
 
-        .hero-title {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            font-size: 32px;
-            color: #2d2d44;
-            margin-bottom: 10px;
-        }
+    .btn:hover {
+      background: #4f46e5;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(99,102,241,0.3);
+    }
 
-        .hero-icon { font-size: 36px; }
+    .objects-box {
+      background: white;
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+    }
 
-        .hero-subtitle { color: #666; font-size: 16px; margin-left: 50px; }
+    .objects-list {
+      flex: 1;
+      overflow-y: auto;
+      max-height: 450px;
+      margin-top: 15px;
+    }
 
-        .main-content {
-            display: grid;
-            grid-template-columns: 1.3fr 1fr;
-            gap: 25px;
-            margin: 0 40px;
-        }
+    .object-item {
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+      background: #fafafa;
+    }
 
-        .card {
-            background: rgba(255,255,255,0.95);
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-        }
+    .object-name {
+      font-weight: 600;
+      font-size: 15px;
+      margin-bottom: 10px;
+    }
 
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 18px;
-            font-weight: 600;
-            color: #2d2d44;
-            margin-bottom: 20px;
-        }
+    .object-actions {
+      display: flex;
+      gap: 10px;
+    }
 
-        .card-icon { font-size: 22px; }
+    .btn-small {
+      flex: 1;
+      border-radius: 8px;
+      padding: 8px;
+      font-size: 13px;
+    }
 
-        .video-wrapper {
-            position: relative;
-            background: #0d0d1a;
-            border-radius: 15px;
-            overflow: hidden;
-            aspect-ratio: 4/3;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
+    .btn-listen { background: #fce7f3; color: #ec4899; }
+    .btn-add { background: #dbeafe; color: #3b82f6; }
 
-        #videoFeed {
-            display: none;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            background: #0d0d1a;
-        }
+    #message {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background: #4f46e5;
+      color: white;
+      padding: 14px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
 
-        .camera-inactive {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            text-align: center;
-            width: 100%;
-            height: 100%;
-        }
-
-        .camera-icon-large { 
-            font-size: 80px; 
-            opacity: 0.5; 
-            margin-bottom: 20px; 
-        }
-
-        .camera-inactive h3 {
-            font-size: 22px;
-            margin-bottom: 10px;
-        }
-
-        .camera-inactive p {
-            color: #b8b8d1;
-            margin-bottom: 25px;
-            font-size: 14px;
-        }
-
-        .activate-btn {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 15px 35px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .activate-btn:hover {
-            background: #5568d3;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102,126,234,0.4);
-        }
-
-        .live-badge {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: #ef4444;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            display: none;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .live-badge::before {
-            content: '';
-            width: 8px;
-            height: 8px;
-            background: white;
-            border-radius: 50%;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-
-        .deactivate-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: rgba(99,102,241,0.9);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 13px;
-            display: none;
-            align-items: center;
-            gap: 6px;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .deactivate-btn:hover {
-            background: rgba(79, 70, 229, 0.9);
-        }
-
-        .detect-btn {
-            width: 100%;
-            background: #6366f1;
-            color: white;
-            border: none;
-            padding: 15px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: all 0.3s;
-        }
-
-        .detect-btn:hover {
-            background: #4f46e5;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
-        }
-
-        .objects-header {
-            text-align: center;
-            color: #2d2d44;
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #f0f0f0;
-            padding-bottom: 15px;
-        }
-
-        .objects-scroll {
-            flex: 1;
-            overflow-y: auto;
-            min-height: 200px;
-            max-height: 300px;
-            padding-right: 8px;
-            margin-bottom: 15px;
-        }
-
-        .objects-scroll::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .objects-scroll::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-
-        .objects-scroll::-webkit-scrollbar-thumb {
-            background: #ccc;
-            border-radius: 10px;
-        }
-
-        .objects-scroll::-webkit-scrollbar-thumb:hover {
-            background: #999;
-        }
-
-        .no-objects {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 40px 20px;
-            color: #999;
-            min-height: 200px;
-        }
-
-        .search-icon-large {
-            font-size: 50px;
-            color: #ddd;
-            margin-bottom: 15px;
-        }
-
-        .no-objects p {
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #666;
-        }
-
-        .no-objects small {
-            color: #999;
-            text-align: center;
-            line-height: 1.5;
-            font-size: 13px;
-        }
-
-        .object-detected {
-            background: white;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 12px;
-        }
-
-        .object-name {
-            font-size: 16px;
-            font-weight: 600;
-            color: #2d2d44;
-            margin-bottom: 12px;
-        }
-
-        .object-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-
-        .btn-listen {
-            background: #fce7f3;
-            color: #ec4899;
-        }
-
-        .btn-listen:hover {
-            background: #fbcfe8;
-        }
-
-        .btn-add {
-            background: #dbeafe;
-            color: #3b82f6;
-        }
-
-        .btn-add:hover {
-            background: #bfdbfe;
-        }
-
-        .flashcards-btn {
-            width: 100%;
-            background: #6366f1;
-            color: white;
-            border: none;
-            padding: 15px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: all 0.3s;
-        }
-
-        .flashcards-btn:hover {
-            background: #4f46e5;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
-        }
-
-        #message {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            padding: 15px 25px;
-            border-radius: 12px;
-            font-weight: 600;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s;
-            z-index: 1000;
-        }
-
-        #message.show { 
-            opacity: 1; 
-            transform: translateY(0); 
-        }
-    </style>
+    #message.show { opacity: 1; }
+  </style>
 </head>
 
 <body>
-    <nav class="navbar">
-        <div class="logo">
-            <div class="logo-icon"><i class="fas fa-camera"></i></div>
-            <span>EduVision</span>
+  <header>
+    <h1><i class="fas fa-camera-retro"></i> EduVision - Detección YOLOv11</h1>
+    <button class="btn" onclick="window.location.href='/api/flashcards/page/'">
+      <i class="fas fa-layer-group"></i> Ir a Flashcards
+    </button>
+  </header>
+
+  <main>
+    <!-- Cámara -->
+    <div class="video-box">
+      <div class="video-wrapper" id="videoContainer">
+        <div class="camera-inactive" id="cameraInactive">
+          <i class="fas fa-video camera-icon"></i>
+          <h3>Cámara desactivada</h3>
+          <p>Haz clic para iniciar el reconocimiento de objetos.</p>
+          <button class="btn" onclick="activateCamera()">
+            <i class="fas fa-play"></i> Activar Cámara
+          </button>
         </div>
-        <ul class="nav-menu">
-            <li><a href="#">Inicio</a></li>
-            <li><a href="#">Flashcards</a></li>
-            <li><a href="#">Juego</a></li>
-            <li><a href="#">Clasificación</a></li>
-        </ul>
-        <div class="user-profile">
-            <div class="user-avatar">M</div>
-            <span>María <i class="fas fa-chevron-down" style="font-size: 12px;"></i></span>
-        </div>
-    </nav>
-
-    <section class="hero">
-        <h1 class="hero-title"><span class="hero-icon"><i class="fas fa-camera-retro"></i></span>Reconocimiento de Objetos</h1>
-        <p class="hero-subtitle">Apunta tu cámara a objetos cercanos y aprende sus nombres en inglés</p>
-    </section>
-
-    <div class="main-content">
-        <div class="card">
-            <div class="card-header"><span class="card-icon"><i class="fas fa-video"></i></span>Vista de Cámara</div>
-            
-            <div class="video-wrapper" id="videoContainer">
-                <div id="cameraInactive" class="camera-inactive">
-                    <div class="camera-icon-large"><i class="fas fa-camera"></i></div>
-                    <h3>Cámara desactivada</h3>
-                    <p>Activa tu cámara para comenzar a identificar objetos y aprender vocabulario en inglés</p>
-                    <button class="activate-btn" onclick="activateCamera()">Activar Cámara</button>
-                </div>
-                <img id="videoFeed" alt="Streaming de cámara">
-                <div class="live-badge" id="liveBadge">En vivo</div>
-                <button class="deactivate-btn" id="deactivateBtn" onclick="deactivateCamera()">
-                    <i class="fas fa-stop-circle"></i> Desactivar
-                </button>
-            </div>
-
-            <button class="detect-btn" id="detectBtn" onclick="detectAgain()">
-                <i class="fas fa-camera"></i> Detectar de Nuevo
-            </button>
-        </div>
-
-        <div class="card">
-            <div class="objects-header">Objetos Detectados</div>
-            
-            <div class="objects-scroll" id="detectedObjects">
-                <div class="no-objects">
-                    <div class="search-icon-large"><i class="fas fa-search"></i></div>
-                    <p>No hay objetos detectados</p>
-                    <small>Activa tu cámara y apunta a<br>objetos cercanos para<br>comenzar a aprender</small>
-                </div>
-            </div>
-
-            <button class="flashcards-btn">
-                <i class="fas fa-layer-group"></i> Flashcards
-            </button>
-        </div>
+        <img id="videoFeed" alt="Streaming de cámara">
+      </div>
+      <button class="btn" onclick="deactivateCamera()" id="stopBtn" style="display:none;">
+        <i class="fas fa-stop"></i> Detener Cámara
+      </button>
     </div>
 
-    <div id="message"></div>
+    <!-- Objetos detectados -->
+    <div class="objects-box">
+      <h2><i class="fas fa-cubes"></i> Objetos Detectados</h2>
+      <div id="objectsList" class="objects-list"></div>
+    </div>
+  </main>
 
-    <script>
+  <div id="message"></div>
+
+  <script>
     let cameraActive = false;
     let frameLoop;
-    const addedObjects = new Set();
+    let detectLoop;
 
-    // 🚀 Activar cámara
     async function activateCamera() {
-        try {
-            const response = await fetch("/api/vision/start/");
-            if (!response.ok) throw new Error("No se pudo iniciar la cámara");
+      const res = await fetch("/api/vision/start/");
+      if (!res.ok) {
+        showMessage("❌ Error al iniciar cámara", "#ef4444");
+        return;
+      }
 
-            cameraActive = true;
-            document.getElementById("cameraInactive").style.display = "none";
-            document.getElementById("videoFeed").style.display = "block";
-            document.getElementById("liveBadge").style.display = "flex";
-            document.getElementById("deactivateBtn").style.display = "flex";
-            document.getElementById("detectBtn").style.display = "flex";
+      cameraActive = true;
+      document.getElementById("cameraInactive").style.display = "none";
+      document.getElementById("videoFeed").style.display = "block";
+      document.getElementById("stopBtn").style.display = "block";
+      showMessage("✅ Cámara activada", "#10b981");
 
-            fetchFrameLoop();
-            startFetchingObjects();
-            showMessage("✅ Cámara activada", "#10b981");
-        } catch (err) {
-            console.error("❌ Error al iniciar cámara:", err);
-            showMessage("❌ Error al iniciar la cámara", "#ef4444");
-        }
+      fetchFrameLoop();
+      startDetectionLoop();
     }
 
-    // 🛑 Desactivar cámara
     async function deactivateCamera() {
-        cameraActive = false;
-        clearTimeout(frameLoop);
-        await fetch("/api/vision/stop/");
-        document.getElementById("cameraInactive").style.display = "flex";
-        document.getElementById("videoFeed").style.display = "none";
-        document.getElementById("liveBadge").style.display = "none";
-        document.getElementById("deactivateBtn").style.display = "none";
-        document.getElementById("detectBtn").style.display = "none";
-        showMessage("🔴 Cámara desactivada", "#6b7280");
+      await fetch("/api/vision/stop/");
+      cameraActive = false;
+      clearTimeout(frameLoop);
+      clearInterval(detectLoop);
+      document.getElementById("cameraInactive").style.display = "flex";
+      document.getElementById("videoFeed").style.display = "none";
+      document.getElementById("stopBtn").style.display = "none";
+      document.getElementById("objectsList").innerHTML = "";
+      showMessage("🔴 Cámara detenida", "#6b7280");
     }
 
-    // 📸 Actualizar frames
     async function fetchFrameLoop() {
-        if (!cameraActive) return;
-        try {
-            const res = await fetch("/api/vision/frame/");
-            const data = await res.json();
-            if (data.frame) {
-                document.getElementById("videoFeed").src = data.frame;
-            }
-        } catch (e) {
-            console.warn("⚠️ Error obteniendo frame:", e);
-        }
-        frameLoop = setTimeout(fetchFrameLoop, 150);
+      if (!cameraActive) return;
+      try {
+        const res = await fetch("/api/vision/frame/");
+        const data = await res.json();
+        if (data.frame) document.getElementById("videoFeed").src = data.frame;
+      } catch (e) { console.warn("⚠️ Frame error:", e); }
+      frameLoop = setTimeout(fetchFrameLoop, 120);
     }
 
-    // 🔄 Llamar detección cada 2 s
-    function startFetchingObjects() {
-        fetchObjects();
-        setInterval(() => {
-            if (cameraActive) fetchObjects();
-        }, 2000);
+    function startDetectionLoop() {
+      detectLoop = setInterval(fetchDetections, 2000);
     }
 
-    // 🔍 Obtener objetos detectados desde el backend
-    async function fetchObjects() {
-        if (!cameraActive) return;
-        try {
-            const res = await fetch("/api/vision/objects/");
-            const data = await res.json();
-            const container = document.getElementById("detectedObjects");
-            container.innerHTML = "";
-
-            if (data.objects && data.objects.length > 0) {
-                data.objects.forEach(obj => {
-                    const label = obj.label || obj;
-
-                    const div = document.createElement("div");
-                    div.classList.add("object-detected");
-                    div.innerHTML = `
-                        <div class="object-name">${label}</div>
-                        <div class="object-actions">
-                            <button class="btn btn-listen" onclick="speak('${label}')">
-                                <i class="fas fa-volume-up"></i> Escuchar
-                            </button>
-                            <button class="btn btn-add" onclick='addFlashcard("${label}")'>
-                                <i class="fas fa-plus"></i> Añadir
-                            </button>
-                        </div>
-                    `;
-                    container.appendChild(div);
-                });
-            } else {
-                container.innerHTML = `
-                    <div class="no-objects">
-                        <div class="search-icon-large"><i class="fas fa-search"></i></div>
-                        <p>No hay objetos detectados</p>
-                        <small>Mueve la cámara hacia<br>objetos cercanos</small>
-                    </div>
-                `;
-            }
-        } catch (err) {
-            console.error("❌ Error obteniendo objetos:", err);
-        }
+    async function fetchDetections() {
+      if (!cameraActive) return;
+      try {
+        const res = await fetch("/api/vision/detect/");
+        const data = await res.json();
+        renderObjects(data.objects || []);
+      } catch (e) {
+        console.error("❌ Error obteniendo detección:", e);
+      }
     }
 
-    // 💾 Crear flashcard (usa el recorte real del backend)
+    function renderObjects(objects) {
+      const container = document.getElementById("objectsList");
+      container.innerHTML = "";
+      if (!objects.length) {
+        container.innerHTML = "<p style='color:#666;text-align:center;'>No se detectan objetos.</p>";
+        return;
+      }
+
+      objects.forEach(obj => {
+        const div = document.createElement("div");
+        div.classList.add("object-item");
+        div.innerHTML = `
+          <div class="object-name">${obj.label} (${Math.round(obj.confidence * 100)}%)</div>
+          <div class="object-actions">
+            <button class="btn-small btn-listen" onclick="speak('${obj.label}')">
+              <i class="fas fa-volume-up"></i> Escuchar
+            </button>
+            <button class="btn-small btn-add" onclick='addFlashcard("${obj.label}")'>
+              <i class="fas fa-plus"></i> Añadir
+            </button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
     async function addFlashcard(label) {
-        if (addedObjects.has(label)) {
-            showMessage("⚠️ Ya añadiste: " + label, "#eab308");
-            return;
-        }
+      const confirmAdd = confirm(`¿Crear flashcard para "${label}"?`);
+      if (!confirmAdd) return;
 
-        const confirm_create = confirm(`¿Crear flashcard para "${label}"?`);
-        if (!confirm_create) return;
+      const response = await fetch("/api/flashcards/add/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          palabra: label,
+          traduccion: "Traducción pendiente"
+        }),
+      });
 
-        try {
-            const response = await fetch("/api/flashcards/add/", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    palabra: label,
-                    traduccion: "Traducción pendiente"
-                }),
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                showMessage("✅ Flashcard creada: " + data.palabra, "#10b981");
-                addedObjects.add(label);
-                console.log("💾 Flashcard guardada:", data);
-            } else {
-                showMessage("⚠️ " + (data.error || "Error al guardar"), "#eab308");
-                console.warn("⚠️ Error en backend:", data);
-            }
-        } catch (error) {
-            console.error("❌ Error en fetch:", error);
-            showMessage("❌ Error al conectar con el servidor", "#ef4444");
-        }
+      const data = await response.json();
+      if (response.ok) showMessage("✅ Flashcard creada: " + data.palabra, "#10b981");
+      else showMessage("⚠️ " + (data.error || "Error"), "#eab308");
     }
 
-    // 🔁 Forzar nueva detección manual
-    function detectAgain() {
-        if (cameraActive) {
-            fetchObjects();
-            showMessage("🔄 Detectando objetos...", "#3b82f6");
-        }
-    }
-
-    // 🔊 Leer palabra detectada
     function speak(label) {
-        const utterance = new SpeechSynthesisUtterance(label);
-        utterance.lang = "en-US";
-        speechSynthesis.speak(utterance);
+      const utterance = new SpeechSynthesisUtterance(label);
+      utterance.lang = "en-US";
+      speechSynthesis.speak(utterance);
     }
 
-    // 💬 Mostrar mensajes flotantes
     function showMessage(text, color) {
-        const msg = document.getElementById("message");
-        msg.textContent = text;
-        msg.style.background = color;
-        msg.style.color = "white";
-        msg.classList.add("show");
-        setTimeout(() => msg.classList.remove("show"), 3000);
+      const msg = document.getElementById("message");
+      msg.textContent = text;
+      msg.style.background = color;
+      msg.classList.add("show");
+      setTimeout(() => msg.classList.remove("show"), 3000);
     }
-    </script>
-
-
-
-
-
-
+  </script>
 </body>
 </html>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-{% comment %} 
-
-<script>
-    let cameraActive = false;
-    let frameLoop;
-    const addedObjects = new Set();
-
-    async function activateCamera() {
-        try {
-            const response = await fetch("/api/vision/start/");
-            if (!response.ok) throw new Error("No se pudo iniciar la cámara");
-
-            cameraActive = true;
-            document.getElementById("cameraInactive").style.display = "none";
-            document.getElementById("videoFeed").style.display = "block";
-            document.getElementById("liveBadge").style.display = "flex";
-            document.getElementById("deactivateBtn").style.display = "flex";
-            document.getElementById("detectBtn").style.display = "flex";
-
-            fetchFrameLoop();
-            startFetchingObjects();
-            showMessage("✅ Cámara activada", "#10b981");
-        } catch (err) {
-            showMessage("❌ Error al iniciar la cámara", "#ef4444");
-        }
-    }
-
-    async function deactivateCamera() {
-        cameraActive = false;
-        clearTimeout(frameLoop);
-        await fetch("/api/vision/stop/");
-        document.getElementById("cameraInactive").style.display = "flex";
-        document.getElementById("videoFeed").style.display = "none";
-        document.getElementById("liveBadge").style.display = "none";
-        document.getElementById("deactivateBtn").style.display = "none";
-        document.getElementById("detectBtn").style.display = "none";
-        showMessage("🔴 Cámara desactivada", "#6b7280");
-    }
-
-    async function fetchFrameLoop() {
-        if (!cameraActive) return;
-        try {
-            const res = await fetch("/api/vision/frame/");
-            const data = await res.json();
-            if (data.frame) {
-                const videoFeed = document.getElementById("videoFeed");
-                videoFeed.src = data.frame;
-            }
-        } catch (e) {
-            console.warn("Error obteniendo frame:", e);
-        }
-        frameLoop = setTimeout(fetchFrameLoop, 150);
-    }
-
-    function startFetchingObjects() {
-        fetchObjects();
-        setInterval(() => {
-            if (cameraActive) fetchObjects();
-        }, 2000);
-    }
-
-    async function fetchObjects() {
-        if (!cameraActive) return;
-        try {
-            const res = await fetch("/api/vision/objects/");
-            const data = await res.json();
-            const container = document.getElementById("detectedObjects");
-            container.innerHTML = "";
-
-            if (data.objects && data.objects.length > 0) {
-                data.objects.forEach(obj => {
-                    const label = obj.label || obj; // por compatibilidad
-                    const bbox = obj.bbox || null;  // coordenadas [x1, y1, x2, y2]
-
-                    const div = document.createElement("div");
-                    div.classList.add("object-detected");
-                    div.innerHTML = `
-                        <div class="object-name">${label}</div>
-                        <div class="object-actions">
-                            <button class="btn btn-listen" onclick="speak('${label}')">
-                                <i class="fas fa-volume-up"></i> Escuchar
-                            </button>
-                            <button class="btn btn-add" onclick='addFlashcard("${label}", ${JSON.stringify(bbox)})'>
-                                <i class="fas fa-plus"></i> Añadir
-                            </button>
-                        </div>
-                    `;
-                    container.appendChild(div);
-                });
-            } else {
-                container.innerHTML = `
-                    <div class="no-objects">
-                        <div class="search-icon-large"><i class="fas fa-search"></i></div>
-                        <p>No hay objetos detectados</p>
-                        <small>Mueve la cámara hacia<br>objetos cercanos</small>
-                    </div>
-                `;
-            }
-        } catch (err) {
-            console.error("Error obteniendo objetos:", err);
-        }
-    }
-
-
-    async function addFlashcard(label, bbox = null) {
-        if (addedObjects.has(label)) {
-            showMessage("⚠️ Ya añadiste: " + label, "#eab308");
-            return;
-        }
-
-        const confirm_create = confirm(`¿Crear flashcard para "${label}"?`);
-        if (!confirm_create) return;
-
-        try {
-            // 1️⃣ Capturamos el frame actual mostrado en la cámara
-            const videoFeed = document.getElementById("videoFeed");
-            let imageBase64 = null;
-
-            if (videoFeed && videoFeed.src) {
-                const canvas = document.createElement("canvas");
-                canvas.width = videoFeed.naturalWidth || 640;
-                canvas.height = videoFeed.naturalHeight || 480;
-                const ctx = canvas.getContext("2d");
-                ctx.drawImage(videoFeed, 0, 0, canvas.width, canvas.height);
-                imageBase64 = canvas.toDataURL("image/png");
-            }
-
-            // 2️⃣ Enviamos palabra, bbox y la imagen
-            const response = await fetch("/api/flashcards/add/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    palabra: label,
-                    traduccion: "Traducción pendiente",
-                    imagen: imageBase64,
-                    bbox: bbox
-                }),
-            });
-
-            // 3️⃣ Procesamos respuesta del backend
-            const data = await response.json();
-
-            if (response.ok) {
-                showMessage("✅ Flashcard creada: " + data.palabra, "#10b981");
-                addedObjects.add(label);
-                console.log("💾 Flashcard guardada:", data);
-            } else {
-                showMessage("⚠️ " + (data.error || "Error al guardar"), "#eab308");
-                console.warn("⚠️ Error en backend:", data);
-            }
-        } catch (error) {
-            console.error("❌ Error en fetch:", error);
-            showMessage("❌ Error al conectar con el servidor", "#ef4444");
-        }
-    }
-
-
-
-
-    function detectAgain() {
-        if (cameraActive) {
-            fetchObjects();
-            showMessage("🔄 Detectando objetos...", "#3b82f6");
-        }
-    }
-
-    function speak(label) {
-        const utterance = new SpeechSynthesisUtterance(label);
-        utterance.lang = "en-US";
-        speechSynthesis.speak(utterance);
-    }
-
-    function showMessage(text, color) {
-        const msg = document.getElementById("message");
-        msg.textContent = text;
-        msg.style.background = color;
-        msg.style.color = "white";
-        msg.classList.add("show");
-        setTimeout(() => msg.classList.remove("show"), 3000);
-    }
-</script> {% endcomment %}
-
-
-
-
-
-{% comment %} <!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduVision - Reconocimiento de Objetos</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            min-height: 100vh;
-            padding-bottom: 40px;
-        }
-
-        .navbar {
-            background: #2d2d44;
-            padding: 15px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: white;
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        .logo-icon {
-            width: 35px;
-            height: 35px;
-            background: #667eea;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
-
-        .nav-menu { display: flex; gap: 35px; list-style: none; }
-        .nav-menu a { color: #b8b8d1; text-decoration: none; font-size: 16px; transition: color 0.3s; }
-        .nav-menu a:hover { color: white; }
-
-        .hero {
-            background: rgba(255,255,255,0.95);
-            margin: 30px 40px;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-        }
-
-        .hero-title {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            font-size: 32px;
-            color: #2d2d44;
-            margin-bottom: 10px;
-        }
-
-        .hero-subtitle { color: #666; font-size: 16px; margin-left: 50px; }
-
-        .main-content {
-            display: grid;
-            grid-template-columns: 1.3fr 1fr;
-            gap: 25px;
-            margin: 0 40px;
-        }
-
-        .card {
-            background: rgba(255,255,255,0.95);
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-        }
-
-        .video-wrapper {
-            position: relative;
-            background: #0d0d1a;
-            border-radius: 15px;
-            overflow: hidden;
-            aspect-ratio: 4/3;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #videoFeed {
-            display: none;
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            background: #0d0d1a;
-        }
-
-        .camera-inactive {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            text-align: center;
-        }
-
-        .camera-icon-large { font-size: 80px; opacity: 0.5; margin-bottom: 20px; }
-
-        .activate-btn {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 15px 35px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .activate-btn:hover {
-            background: #5568d3;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102,126,234,0.4);
-        }
-
-        .live-badge {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: #ef4444;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-            display: none;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .deactivate-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: rgba(99,102,241,0.9);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            display: none;
-        }
-
-        .detect-btn {
-            width: 100%;
-            margin-top: 20px;
-            background: #6366f1;
-            color: white;
-            border: none;
-            padding: 15px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            display: none;
-        }
-
-        #message {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            padding: 15px 25px;
-            border-radius: 12px;
-            font-weight: 600;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s;
-            z-index: 1000;
-        }
-
-        #message.show { opacity: 1; transform: translateY(0); }
-    </style>
-</head>
-
-<body>
-    <nav class="navbar">
-        <div class="logo">
-            <div class="logo-icon"><i class="fas fa-camera"></i></div>
-            <span>EduVision</span>
-        </div>
-        <ul class="nav-menu">
-            <li><a href="#">Inicio</a></li>
-            <li><a href="#">Flashcards</a></li>
-            <li><a href="#">Juego</a></li>
-            <li><a href="#">Clasificación</a></li>
-        </ul>
-    </nav>
-
-    <section class="hero">
-        <h1 class="hero-title"><span class="hero-icon"><i class="fas fa-camera-retro"></i></span>Reconocimiento de Objetos</h1>
-        <p class="hero-subtitle">Apunta tu cámara a objetos cercanos y aprende sus nombres en inglés</p>
-    </section>
-
-    <div class="main-content">
-        <div class="card">
-            <div class="card-header"><span class="card-icon"><i class="fas fa-video"></i></span>Vista de Cámara</div>
-            
-            <div class="video-wrapper">
-                <div id="cameraInactive" class="camera-inactive">
-                    <div class="camera-icon-large"><i class="fas fa-camera"></i></div>
-                    <h3>Cámara desactivada</h3>
-                    <p>Activa tu cámara para comenzar a identificar objetos y aprender vocabulario en inglés</p>
-                    <button class="activate-btn" onclick="activateCamera()">Activar Cámara</button>
-                </div>
-                <img id="videoFeed" alt="Streaming de cámara">
-                <div class="live-badge" id="liveBadge">LIVE</div>
-                <button class="deactivate-btn" id="deactivateBtn" onclick="deactivateCamera()">
-                    <i class="fas fa-stop-circle"></i> Desactivar
-                </button>
-            </div>
-
-            <button class="detect-btn" id="detectBtn" onclick="detectAgain()">
-                <i class="fas fa-camera"></i> Detectar de Nuevo
-            </button>
-        </div>
-    </div>
-
-    <div id="message"></div>
-
-<script>
-    let cameraActive = false;
-    let frameLoop;
-
-    async function activateCamera() {
-        try {
-            const response = await fetch("/api/vision/start/");
-            if (!response.ok) throw new Error("No se pudo iniciar la cámara");
-
-            cameraActive = true;
-            document.getElementById("cameraInactive").style.display = "none";
-            document.getElementById("videoFeed").style.display = "block";
-            document.getElementById("liveBadge").style.display = "flex";
-            document.getElementById("deactivateBtn").style.display = "flex";
-            document.getElementById("detectBtn").style.display = "flex";
-
-            fetchFrameLoop();
-            showMessage("✅ Cámara activada", "#10b981");
-        } catch (err) {
-            showMessage("❌ Error al iniciar la cámara", "#ef4444");
-        }
-    }
-
-    async function deactivateCamera() {
-        cameraActive = false;
-        clearTimeout(frameLoop);
-        await fetch("/api/vision/stop/");
-        document.getElementById("cameraInactive").style.display = "flex";
-        document.getElementById("videoFeed").style.display = "none";
-        document.getElementById("liveBadge").style.display = "none";
-        document.getElementById("deactivateBtn").style.display = "none";
-        document.getElementById("detectBtn").style.display = "none";
-        showMessage("🔴 Cámara desactivada", "#6b7280");
-    }
-
-    async function fetchFrameLoop() {
-        if (!cameraActive) return;
-        try {
-            const res = await fetch("/api/vision/frame/");
-            const data = await res.json();
-            if (data.frame) {
-                const videoFeed = document.getElementById("videoFeed");
-                videoFeed.src = data.frame;
-            }
-        } catch (e) {
-            console.warn("⚠️ Error obteniendo frame:", e);
-        }
-        frameLoop = setTimeout(fetchFrameLoop, 150);
-    }
-
-    function detectAgain() {
-        showMessage("🔄 Detectando objetos...", "#3b82f6");
-    }
-
-    function showMessage(text, color) {
-        const msg = document.getElementById("message");
-        msg.textContent = text;
-        msg.style.background = color;
-        msg.style.color = "white";
-        msg.classList.add("show");
-        setTimeout(() => msg.classList.remove("show"), 3000);
-    }
-</script>
-
-</body>
-</html> {% endcomment %}

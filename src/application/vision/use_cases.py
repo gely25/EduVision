@@ -1,5 +1,5 @@
-from src.infrastructure.ai_models import object_detector
+from src.infrastructure.ai_models import orb_recognizer
 
 class GetDetectedObjectsUC:
     def __call__(self):
-        return object_detector.get_detected_objects_with_images()
+        return orb_recognizer.get_detected_objects_with_images()

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduVision - Clasificador TM</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      color: #2d2d44;
+    }
+
+    header {
+      background: #2d2d44;
+      color: white;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 30px;
+      padding: 40px;
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    .video-box, .info-box {
+      background: white;
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    }
+
+    .video-wrapper {
+      background: black;
+      border-radius: 12px;
+      overflow: hidden;
+      aspect-ratio: 4/3;
+      position: relative;
+    }
+
+    #videoFeed {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .camera-inactive {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: white;
+      text-align: center;
+    }
+
+    .camera-icon { font-size: 60px; opacity: 0.5; margin-bottom: 15px; }
+
+    .btn {
+      background: #6366f1;
+      color: white;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn:hover { background: #4f46e5; }
+
+    .result {
+      font-size: 1.2em;
+      text-align: center;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .btn-small {
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 14px;
+      flex: 1;
+    }
+
+    .btn-listen { background: #fce7f3; color: #ec4899; }
+    .btn-add { background: #dbeafe; color: #3b82f6; }
+
+    #message {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background: #4f46e5;
+      color: white;
+      padding: 14px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    #message.show { opacity: 1; }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1><i class="fas fa-brain"></i> EduVision - Teachable Machine</h1>
+    <button class="btn" onclick="window.location.href='/api/flashcards/page/'">
+      <i class="fas fa-layer-group"></i> Ir a Flashcards
+    </button>
+  </header>
+
+  <main>
+    <!-- Cámara -->
+    <div class="video-box">
+      <div class="video-wrapper" id="videoContainer">
+        <div class="camera-inactive" id="cameraInactive">
+          <i class="fas fa-video camera-icon"></i>
+          <h3>Cámara desactivada</h3>
+          <p>Haz clic para iniciar el clasificador.</p>
+          <button class="btn" onclick="startCamera()">
+            <i class="fas fa-play"></i> Iniciar Cámara
+          </button>
+        </div>
+        <img id="videoFeed" alt="Streaming de cámara">
+      </div>
+      <button class="btn" onclick="stopCamera()" id="stopBtn" style="display:none;">
+        <i class="fas fa-stop"></i> Detener Cámara
+      </button>
+    </div>
+
+    <!-- Resultado -->
+    <div class="info-box">
+      <h2><i class="fas fa-cube"></i> Objeto Detectado</h2>
+      <p id="result" class="result">Esperando cámara...</p>
+
+      <div class="actions" id="actions" style="display:none;">
+        <button class="btn-small btn-listen" onclick="speak()">
+          <i class="fas fa-volume-up"></i> Escuchar
+        </button>
+        <button class="btn-small btn-add" onclick="addFlashcard()">
+          <i class="fas fa-plus"></i> Añadir Flashcard
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <div id="message"></div>
+
+  <script>
+    let cameraActive = false;
+    let currentLabel = "";
+    let frameLoop;
+
+    async function startCamera() {
+      await fetch("/api/vision/tm/start/");
+      cameraActive = true;
+      document.getElementById("cameraInactive").style.display = "none";
+      document.getElementById("videoFeed").style.display = "block";
+      document.getElementById("stopBtn").style.display = "block";
+      showMessage("✅ Cámara activada", "#10b981");
+      updateFrame();
+    }
+
+    async function stopCamera() {
+      await fetch("/api/vision/tm/stop/");
+      cameraActive = false;
+      clearTimeout(frameLoop);
+      document.getElementById("cameraInactive").style.display = "flex";
+      document.getElementById("videoFeed").style.display = "none";
+      document.getElementById("stopBtn").style.display = "none";
+      document.getElementById("result").textContent = "Cámara detenida.";
+      document.getElementById("actions").style.display = "none";
+      showMessage("🔴 Cámara detenida", "#6b7280");
+    }
+
+    async function updateFrame() {
+      if (!cameraActive) return;
+      try {
+        const res = await fetch("/api/vision/tm/frame/");
+        const data = await res.json();
+
+        if (!data.error && data.frame) {
+          document.getElementById("videoFeed").src = data.frame;
+          const label = data.label || "Desconocido";
+          const conf = (data.confidence * 100).toFixed(1);
+          currentLabel = label;
+          document.getElementById("result").textContent = `🧠 ${label} (${conf}%)`;
+          document.getElementById("actions").style.display = "flex";
+        }
+      } catch (err) {
+        console.warn("⚠️ Error obteniendo frame:", err);
+      }
+      frameLoop = setTimeout(updateFrame, 300);
+    }
+
+    function speak() {
+      if (!currentLabel) return;
+      const utterance = new SpeechSynthesisUtterance(currentLabel);
+      utterance.lang = "en-US";
+      speechSynthesis.speak(utterance);
+    }
+
+    async function addFlashcard() {
+      if (!currentLabel) return;
+      const confirmAdd = confirm(`¿Crear flashcard para "${currentLabel}"?`);
+      if (!confirmAdd) return;
+
+      const response = await fetch("/api/flashcards/add/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          palabra: currentLabel,
+          traduccion: "Traducción pendiente"
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok) showMessage("✅ Flashcard creada: " + data.palabra, "#10b981");
+      else showMessage("⚠️ " + (data.error || "Error"), "#eab308");
+    }
+
+    function showMessage(text, color) {
+      const msg = document.getElementById("message");
+      msg.textContent = text;
+      msg.style.background = color;
+      msg.classList.add("show");
+      setTimeout(() => msg.classList.remove("show"), 3000);
+    }
+  </script>
+</body>
+</html>
