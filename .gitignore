@@ -1,5 +1,5 @@
 # ============================================
-# 🧠 EDUVISION — Django + YOLO + OpenCV Project
+# 🧠 EDUVISION — Django + Teachable Machine + OpenCV
 # ============================================
 
 # ---- Python ----
@@ -16,7 +16,7 @@ dist/
 .eggs/
 .Python
 
-# ---- Virtual environment ----
+# ---- Entornos virtuales ----
 venv/
 env/
 ENV/
@@ -36,64 +36,31 @@ static_root/
 tmp/
 temp/
 
-# ---- Django cache & compiled files ----
+# ---- Cache y archivos temporales ----
 *.mo
-*.pot
-*.pyc
-*.pyo
-*.pyd
-__pycache__/
 celerybeat-schedule
 celerybeat.pid
+*.tmp
+*.bak
+*.swp
+*.swo
+*.orig
+*.rej
 
-# ---- Media & uploads ----
-media/
-uploads/
-flashcards/
-*.jpg
-*.jpeg
-*.png
-*.gif
-*.bmp
-*.tiff
-*.svg
+# ---- Archivos del sistema ----
+.DS_Store
+Thumbs.db
+Desktop.ini
+ehthumbs.db
 
-# ---- YOLO & AI model weights ----
-*.pt
-*.onnx
-*.weights
-runs/
-models/
-checkpoints/
-*.engine
-*.trt
-*.bin
-*.cfg
-*.xml
-*.json
-*.npz
-*.npy
-
-# ---- Jupyter / Notebooks ----
-*.ipynb_checkpoints
-.ipynb_checkpoints/
-notebooks/
-__pycache__/
-
-# ---- IDEs & Editors ----
+# ---- IDEs ----
 .vscode/
 .idea/
 .spyproject/
 *.sublime-project
 *.sublime-workspace
 
-# ---- System files ----
-.DS_Store
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-
-# ---- Environment & Secrets ----
+# ---- Variables de entorno y secretos ----
 .env
 .env.local
 .env.development
@@ -102,13 +69,13 @@ Desktop.ini
 *.pem
 secrets.json
 
-# ---- Pipenv / Poetry ----
+# ---- Librerías de dependencias opcionales ----
 Pipfile
 Pipfile.lock
 poetry.lock
 *.toml
 
-# ---- Test / Coverage ----
+# ---- Tests / Cobertura ----
 htmlcov/
 .tox/
 .nox/
@@ -117,18 +84,8 @@ htmlcov/
 .cache
 nosetests.xml
 coverage.xml
-*.cover
-*.py,cover
 .pytest_cache/
 pytestdebug.log
-
-# ---- Temporary files ----
-*.tmp
-*.bak
-*.swp
-*.swo
-*.orig
-*.rej
 
 # ---- Logs ----
 *.log
@@ -137,26 +94,32 @@ pytestdebug.log
 logs/
 log/
 
+# ---- Archivos grandes o innecesarios ----
+*.pt
+*.onnx
+*.weights
+*.engine
+*.trt
+*.bin
 
+# ---- 🧠 MODELO TEACHABLE MACHINE ----
+!src/infrastructure/ai_models/teachable_machine/**
+!src/infrastructure/ai_models/teachable_machine/model.savedmodel/**
 
-# ---- Python virtual environments adicionales ----
-bin/
-Scripts/
-Include/
-Lib/
+# ---- 📸 CÁMARA Y OPENCV ----
+!src/infrastructure/camera/**
+!src/infrastructure/ai_models/**
+!src/application/**
+!src/domain/**
+!src/interfaces/**
+!api/**
+!templates/**
+!EduVision/**
+!requirements.txt
+!manage.py
 
-# ---- Django migrations (si no quieres subirlas) ----
-# migrations/
-
-# ---- Compilaciones temporales de OpenCV ----
-__pycache__/
-*.lock
-*.dat
-*.yaml
-
-# ---- Archivos de ejecución local ----
-*.pid
-*.sock
-*.log
-*.bak
- 
+# ---- 🧩 FLASHCARDS ----
+# Subimos el código, no las imágenes generadas
+!src/infrastructure/orm/flashcards/**
+media/flashcards/*
+uploads/flashcards/*

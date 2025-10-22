@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mis Flashcards</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root{
+      --bg:#96A7F6; --panel:#eaeaf0; --ink:#1f2937;
+      --chip:#e5e7eb; --ok:#10b981; --warn:#eab308; --muted:#6b7280;
+      --tile:#2b2f47; --tileText:#f8fafc;
+    }
+    *{box-sizing:border-box} 
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial;
+      background:#8fa3f5; background:linear-gradient(135deg,#7c8cf2 0%,#9fb0fb 100%); color:var(--ink)}
+    .wrap{max-width:1120px;margin:32px auto;padding:0 16px}
+
+    .head{display:flex;align-items:center;gap:16px;background:#eef0f7;border-radius:16px;
+      padding:18px 20px;box-shadow:0 8px 24px rgba(0,0,0,.08)}
+    .head h1{font-size:24px;margin:0}
+    .recognize{margin-left:auto;display:inline-flex;align-items:center;gap:10px;background:#4c1d95;
+      color:#fff;border:0;border-radius:12px;padding:12px 16px;font-weight:700;cursor:pointer}
+    .recognize i{background:#6d28d9;padding:8px;border-radius:8px}
+
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin:22px 0}
+    .metric{background:#f0f2f8;border-radius:14px;padding:24px;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.06);border:2px solid #e0e3f0}
+    .metric .n{font-size:40px;font-weight:900;color:#1f2937}
+    .metric .lbl{color:#6b7280;margin-top:6px;font-weight:500}
+
+    .layout{display:grid;grid-template-columns:1fr 340px; gap:24px}
+    .panel{background:#ebedf5;border-radius:16px;padding:18px;box-shadow:0 10px 26px rgba(0,0,0,.08)}
+
+    .section{background:rgba(255,255,255,.4);
+      border-radius:14px;padding:16px;margin-top:16px;border:2px solid rgba(255,255,255,.3)}
+    .section h3{margin:0;display:flex;align-items:center;gap:10px;color:rgba(255,255,255,.7);font-weight:600;font-size:15px}
+    .section .count{margin-left:auto;background:#fff;padding:6px 12px;border-radius:20px;font-weight:800;color:#1f2937;font-size:14px}
+
+    .empty-state{color:#9ca3af;font-size:14px;padding:20px;text-align:center}
+
+    .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-top:16px}
+    .tile{background:var(--tile); color:var(--tileText); border-radius:16px; padding:20px;display:flex;flex-direction:column}
+    .tile .title{font-weight:900;font-size:26px;letter-spacing:.5px;text-transform:uppercase}
+    .chip{display:inline-flex;align-items:center;gap:8px; padding:8px 12px;margin-top:12px;
+      background:rgba(255,255,255,.12); border-radius:999px; font-weight:600;font-size:13px;width:fit-content}
+    .chip i{opacity:.9}
+    .tile-btn{margin-top:12px;background:#ef4444;border:0;color:#fff;border-radius:999px;padding:10px 14px;
+      cursor:pointer;font-weight:600;font-size:13px;transition:background 0.2s;align-self:flex-start}
+    .tile-btn:hover{background:#dc2626}
+
+    .side .aside-card{background:#f0f1f7;border-radius:14px;padding:20px;margin-bottom:16px;box-shadow:0 4px 12px rgba(0,0,0,.05)}
+    .side .aside-card h4{margin:0 0 12px;color:#1f2937;font-weight:600}
+    .big-btn{width:100%;padding:14px;border:0;border-radius:12px;background:#4f46e5;color:#fff;font-weight:700;cursor:pointer;font-size:14px;transition:background 0.2s}
+    .big-btn:hover{background:#4338ca}
+    .muted{color:var(--muted);font-size:14px;line-height:1.5}
+
+    .msg{position:fixed;right:16px;bottom:16px;background:#111;color:#fff;padding:12px 14px;border-radius:10px;
+      opacity:0;transform:translateY(10px);transition:.25s;box-shadow:0 10px 24px rgba(0,0,0,.25)}
+    .msg.show{opacity:1;transform:none}
+
+    .how-it-works{background:#d1fae5;border-left:4px solid #10b981;padding:16px;border-radius:8px}
+    .how-it-works ul{margin:0;padding-left:20px;line-height:1.6}
+    .how-it-works li{font-size:13px;color:#065f46;margin-bottom:6px}
+    .how-it-works b{font-weight:700}
+
+    .empty-review{text-align:center;color:#9ca3af;padding:20px}
+    .empty-review i{font-size:32px;opacity:0.6;margin-bottom:12px;display:block}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- Encabezado -->
+    <div class="head">
+      <i class="fa-solid fa-book fa-lg"></i>
+      <div>
+        <h1>Mis Flashcards</h1>
+        <div class="muted">Gestiona y repasa tu vocabulario de inglés</div>
+      </div>
+      <a class="recognize" href="/api/vision/live/">
+        <i class="fa-solid fa-camera"></i> RECONOCER
+      </a>
+    </div>
+
+    <!-- Métricas -->
+    <div class="grid">
+      <div class="metric"><div class="n" id="mPending">0</div><div class="lbl">Palabras Pendientes</div></div>
+      <div class="metric"><div class="n" id="mMastered">0</div><div class="lbl">Palabras Dominadas</div></div>
+      <div class="metric"><div class="n" id="mTotal">0</div><div class="lbl">Palabras Totales</div></div>
+    </div>
+
+    <div class="layout">
+      <!-- Columna izquierda -->
+      <div>
+        <div class="section">
+          <h3><i class="fa-regular fa-hourglass-half"></i> Palabras Pendientes <span class="count" id="cPending">0</span></h3>
+          <div class="list" id="listPending"></div>
+        </div>
+
+        <div class="section" style="margin-top:16px;">
+          <h3><i class="fa-solid fa-check"></i> Palabras Dominadas <span class="count" id="cMastered">0</span></h3>
+          <div class="list" id="listMastered"></div>
+        </div>
+      </div>
+
+      <!-- Columna derecha -->
+      <div class="side">
+        <div class="aside-card" style="text-align:center">
+          <div style="font-size:32px;margin-bottom:12px"><i class="fa-solid fa-magnifying-glass" style="opacity:.7"></i></div>
+          <div style="font-size:15px;font-weight:600;color:#1f2937;margin-bottom:4px">Sesión de Repaso</div>
+          <div class="muted" style="margin:8px 0 16px;font-size:13px">Aún no hay objetos reconocidos. ¡Explora y escanea algo para comenzar</div>
+          <a class="big-btn" href="/api/flashcards/review/page/">COMENZAR</a>
+        </div>
+
+        <div class="aside-card">
+          <h4><i class="fa-solid fa-circle-info" style="margin-right:8px;color:#10b981"></i>¿Cómo funciona?</h4>
+          <div class="how-it-works">
+            <ul>
+              <li>Revisa las palabras pendientes</li>
+              <li>Marca <b>Recordado</b> para espaciar más la próxima revisión</li>
+              <li>Marca <b>Olvidado</b> para que reaparezca muy pronto</li>
+              <li>El sistema las identificará automáticamente</li>
+              <li>Escucha la pronunciación o crea flashcard</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="msg"></div>
+
+  <script>
+    async function loadSummary() {
+      const res = await fetch('/api/flashcards/summary/');
+      const data = await res.json();
+      renderSummary(data);
+    }
+
+    function renderSummary({ counters, pending, mastered }) {
+      // métricas
+      document.getElementById('mPending').textContent  = counters.pending;
+      document.getElementById('mMastered').textContent = counters.mastered;
+      document.getElementById('mTotal').textContent    = counters.total;
+
+      // contadores en secciones
+      document.getElementById('cPending').textContent  = counters.pending;
+      document.getElementById('cMastered').textContent = counters.mastered;
+
+      // listas
+      renderList('listPending', pending, false);
+      renderList('listMastered', mastered, true);
+    }
+
+    function renderList(containerId, items, isMastered) {
+      const el = document.getElementById(containerId);
+      el.innerHTML = "";
+      if (!items.length) {
+        el.innerHTML = `<div class="empty-state">No hay tarjetas ${isMastered ? "dominadas" : "pendientes"}.</div>`;
+        return;
+      }
+
+      items.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "tile";
+        div.innerHTML = `
+          <div class="title">${item.palabra.toUpperCase()}</div>
+          <div class="chip"><i class="fa-solid ${isMastered ? "fa-check" : "fa-hourglass-half"}"></i>
+            ${isMastered ? "Dominada" : "Aprendiendo"}</div>
+          ${isMastered
+            ? `<button class="tile-btn" onclick="mark(${item.id}, false)">Olvidé esta</button>`
+            : ""
+          }
+        `;
+        el.appendChild(div);
+      });
+    }
+
+    async function mark(id, success) {
+      const res = await fetch(`/api/flashcards/${id}/mark/`, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ success })
+      });
+      if (!res.ok) {
+        showToast('Error actualizando tarjeta');
+        return;
+      }
+      const summary = await res.json();
+      renderSummary(summary);
+      showToast(success ? '✅ ¡Bien! Se espaciará más.' : '🔁 La verás pronto de nuevo.');
+    }
+
+    function showToast(text) {
+      const t = document.getElementById('toast');
+      t.textContent = text;
+      t.classList.add('show');
+      setTimeout(()=>t.classList.remove('show'), 2200);
+    }
+
+    loadSummary();
+  </script>
+</body>
+</html>
