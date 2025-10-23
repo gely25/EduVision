@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Comienzo del Juego{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/object_game/start.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="start-container">
+  <div class="start-card">
+    <h2>🌟 ¡Perfecto, todo está listo!</h2>
+    <p class="text">
+      Ahora comenzaremos el juego.  
+      Eva te pedirá mostrar algunos objetos que ya aprendiste en tus tarjetas.  
+      ¡Intenta conseguir la máxima puntuación!
+    </p>
+
+    <button class="btn-start" id="btnStart">Iniciar juego ▶</button>
+    <p class="page">5/5</p>
+
+    <div class="eva-avatar">
+      <img src="{% static 'img/eva-bot.png' %}" alt="Eva bot">
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/object_game/start.js' %}"></script>
+{% endblock %}

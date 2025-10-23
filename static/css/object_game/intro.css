@@ -1,0 +1,94 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.intro-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.intro-card {
+  background: #e3e5ff;
+  border-radius: 20px;
+  padding: 40px;
+  width: 370px;
+  text-align: center;
+  color: #2d2d44;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.emoji {
+  font-size: 60px;
+}
+
+h1 {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.subtitle {
+  background: #b9b6ff;
+  color: white;
+  padding: 5px 15px;
+  border-radius: 10px;
+  display: inline-block;
+  margin: 10px 0 15px;
+  font-weight: 600;
+}
+
+.description {
+  font-size: 15px;
+  margin-bottom: 25px;
+}
+
+.btn-continue {
+  background: #2d2d44;
+  color: white;
+  padding: 10px 25px;
+  font-size: 18px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-continue:hover {
+  background: #3b3b5a;
+}
+
+.skip {
+  margin-top: 15px;
+  color: #2d2d44;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.page {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #666;
+}
+
+.eva-avatar {
+  position: absolute;
+  bottom: -40px;
+  right: 20px;
+}
+
+.eva-avatar img {
+  width: 85px;
+}

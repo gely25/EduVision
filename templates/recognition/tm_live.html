@@ -10,44 +10,88 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #a8b5e0 0%, #c5cfe8 100%);
+      font-family: 'Segoe UI', Tahoma, sans-serif;
       min-height: 100vh;
       color: #2d2d44;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
     }
 
     header {
-      background: #2d2d44;
-      color: white;
-      padding: 20px 40px;
+      background: white;
+      border-radius: 20px;
+      padding: 25px 35px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      gap: 15px;
+    }
+
+    header h1 {
+      font-size: 1.5em;
+      font-weight: 700;
+      color: #2d2d44;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    header .subtitle {
+      font-size: 0.85em;
+      color: #6b7280;
+      font-weight: 400;
+      margin-top: 4px;
+    }
+
+    .icon-box {
+      background: #f3f4f6;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 1.3em;
     }
 
     main {
       display: grid;
-      grid-template-columns: 1.4fr 1fr;
-      gap: 30px;
-      padding: 40px;
-      max-width: 1100px;
-      margin: auto;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 25px;
     }
 
-    .video-box, .info-box {
+    .card {
       background: white;
-      border-radius: 16px;
-      padding: 25px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      font-size: 1.1em;
+      font-weight: 700;
+      color: #2d2d44;
+    }
+
+    .card-header i {
+      font-size: 1em;
     }
 
     .video-wrapper {
-      background: black;
-      border-radius: 12px;
+      background: #1e1e2e;
+      border-radius: 16px;
       overflow: hidden;
       aspect-ratio: 4/3;
       position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     #videoFeed {
@@ -62,52 +106,255 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100%;
-      color: white;
       text-align: center;
+      padding: 40px;
+      color: white;
     }
 
-    .camera-icon { font-size: 60px; opacity: 0.5; margin-bottom: 15px; }
+    .camera-icon { 
+      font-size: 70px; 
+      opacity: 0.4; 
+      margin-bottom: 20px;
+      background: rgba(255,255,255,0.1);
+      padding: 30px;
+      border-radius: 20px;
+    }
+
+    .camera-inactive h3 {
+      font-size: 1.3em;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    .camera-inactive p {
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 25px;
+      font-size: 0.95em;
+    }
 
     .btn {
-      background: #6366f1;
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
       color: white;
       border: none;
-      padding: 12px 18px;
-      border-radius: 10px;
+      padding: 14px 28px;
+      border-radius: 12px;
       cursor: pointer;
       font-weight: 600;
-      transition: 0.3s;
+      font-size: 0.95em;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    }
+    
+    .btn:hover { 
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn-secondary {
+      background: #ef4444;
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+      margin-top: 15px;
+      width: 100%;
+    }
+
+    .btn-secondary:hover {
+      background: #dc2626;
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+    }
+
+    .status-badge {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      background: #ef4444;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.85em;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .status-badge.active {
+      background: #10b981;
+    }
+
+    .detection-area {
+      background: #f9fafb;
+      border-radius: 16px;
+      padding: 25px;
+      text-align: center;
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 2px dashed #d1d5db;
+    }
+
+    .detection-icon {
+      font-size: 3em;
+      color: #d1d5db;
+      margin-bottom: 15px;
+    }
+
+    .detection-text {
+      color: #6b7280;
+      font-size: 0.95em;
+      line-height: 1.6;
+    }
+
+    .result-display {
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      border-radius: 16px;
+      padding: 25px;
+      text-align: center;
+      border: 2px solid #bae6fd;
+    }
+
+    .result-display h3 {
+      font-size: 1.8em;
+      color: #0c4a6e;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .confidence {
+      background: white;
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      color: #0369a1;
+      font-weight: 600;
+      margin-top: 5px;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .btn-action {
+      padding: 12px 20px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9em;
+      transition: all 0.3s;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
     }
-    .btn:hover { background: #4f46e5; }
 
-    .result {
-      font-size: 1.2em;
+    .btn-listen {
+      background: #fce7f3;
+      color: #be185d;
+    }
+
+    .btn-listen:hover {
+      background: #fbcfe8;
+      transform: translateY(-2px);
+    }
+
+    .btn-add {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .btn-add:hover {
+      background: #bfdbfe;
+      transform: translateY(-2px);
+    }
+
+    .alert-box {
+      display: none;
+      background: #fef2f2;
+      color: #991b1b;
+      padding: 16px;
+      border: 2px solid #fecaca;
+      border-radius: 12px;
       text-align: center;
-      margin-top: 15px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      animation: fadeIn 0.4s ease-in-out;
+    }
+
+    .alert-box i {
+      margin-right: 8px;
+    }
+
+    .help-box {
+      background: #ecfdf5;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+      border: 1px solid #a7f3d0;
+    }
+
+    .help-box h4 {
+      color: #065f46;
+      font-size: 0.95em;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .help-box ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .help-box li {
+      color: #047857;
+      font-size: 0.85em;
+      padding: 6px 0;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .help-box li:before {
+      content: "•";
+      position: absolute;
+      left: 5px;
       font-weight: bold;
     }
 
-    .actions {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
+    .btn-flashcards {
+      width: 100%;
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      color: white;
+      border: none;
+      padding: 14px 24px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.95em;
       margin-top: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+      transition: all 0.3s;
     }
 
-    .btn-small {
-      border-radius: 8px;
-      padding: 10px;
-      font-size: 14px;
-      flex: 1;
+    .btn-flashcards:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
     }
-
-    .btn-listen { background: #fce7f3; color: #ec4899; }
-    .btn-add { background: #dbeafe; color: #3b82f6; }
 
     #message {
       position: fixed;
@@ -115,59 +362,120 @@
       right: 25px;
       background: #4f46e5;
       color: white;
-      padding: 14px 20px;
-      border-radius: 10px;
+      padding: 16px 24px;
+      border-radius: 12px;
       font-weight: 600;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
       opacity: 0;
       transition: opacity 0.3s;
+      z-index: 1000;
     }
+    
     #message.show { opacity: 1; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 968px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 
 <body>
-  <header>
-    <h1><i class="fas fa-brain"></i> EduVision - Teachable Machine</h1>
-    <button class="btn" onclick="window.location.href='/api/flashcards/page/'">
-      <i class="fas fa-layer-group"></i> Ir a Flashcards
-    </button>
-  </header>
+  <div class="container">
+    <header>
+      <div class="icon-box">
+        📚
+      </div>
+      <div>
+        <h1>Reconocimiento de Objetos</h1>
+        <p>Apunta tu cámara hacia <strong>un solo objeto</strong> para aprender su nombre en inglés.</p>
 
-  <main>
-    <!-- Cámara -->
-    <div class="video-box">
-      <div class="video-wrapper" id="videoContainer">
-        <div class="camera-inactive" id="cameraInactive">
-          <i class="fas fa-video camera-icon"></i>
-          <h3>Cámara desactivada</h3>
-          <p>Haz clic para iniciar el clasificador.</p>
-          <button class="btn" onclick="startCamera()">
-            <i class="fas fa-play"></i> Iniciar Cámara
-          </button>
+      </div>
+    </header>
+
+    <main>
+      <!-- Vista de Cámara -->
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-video"></i> Vista de Cámara
         </div>
-        <img id="videoFeed" alt="Streaming de cámara">
-      </div>
-      <button class="btn" onclick="stopCamera()" id="stopBtn" style="display:none;">
-        <i class="fas fa-stop"></i> Detener Cámara
-      </button>
-    </div>
 
-    <!-- Resultado -->
-    <div class="info-box">
-      <h2><i class="fas fa-cube"></i> Objeto Detectado</h2>
-      <p id="result" class="result">Esperando cámara...</p>
+        <div class="video-wrapper" id="videoContainer">
+          <div class="status-badge" id="statusBadge" style="display: none;">
+            <i class="fas fa-circle"></i> <span id="statusText">En vivo</span>
+          </div>
 
-      <div class="actions" id="actions" style="display:none;">
-        <button class="btn-small btn-listen" onclick="speak()">
-          <i class="fas fa-volume-up"></i> Escuchar
-        </button>
-        <button class="btn-small btn-add" onclick="addFlashcard()">
-          <i class="fas fa-plus"></i> Añadir Flashcard
+          <div class="camera-inactive" id="cameraInactive">
+            <i class="fas fa-video-slash camera-icon"></i>
+            <h3>Cámara desactivada</h3>
+            <p>Activa tu cámara para comenzar a detectar objetos y aprender vocabulario en inglés</p>
+            <button class="btn" onclick="startCamera()">
+              <i class="fas fa-play"></i> Activar Cámara
+            </button>
+          </div>
+          
+          <img id="videoFeed" alt="Streaming de cámara">
+        </div>
+
+        <button class="btn btn-secondary" onclick="stopCamera()" id="stopBtn" style="display:none;">
+          <i class="fas fa-stop"></i> Detener
         </button>
       </div>
-    </div>
-  </main>
+
+      <!-- Objetos Detectados -->
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-cube"></i> Objetos Detectados
+        </div>
+
+        <div id="alertBox" class="alert-box">
+          <i class="fas fa-exclamation-triangle"></i>
+          Objeto no reconocido, intenta enfocar otro
+        </div>
+
+        <div id="detectionArea" class="detection-area">
+          <i class="fas fa-search detection-icon"></i>
+          <p class="detection-text">No se detectó ningún objeto<br><br>Activa tu cámara y apunta a un objeto cercano para comenzar el aprendizaje</p>
+        </div>
+
+        <div id="resultArea" style="display: none;">
+          <div class="result-display">
+            <h3 id="objectName">pencil</h3>
+            <span class="confidence" id="confidenceValue">95.2%</span>
+          </div>
+
+          <div class="actions">
+            <button class="btn-action btn-listen" onclick="speak()">
+              <i class="fas fa-volume-up"></i> Escuchar
+            </button>
+            <button class="btn-action btn-add" onclick="addFlashcard()">
+              <i class="fas fa-plus"></i> Añadir
+            </button>
+          </div>
+        </div>
+
+        <div class="help-box">
+          <h4><i class="fas fa-lightbulb"></i> ¿Cómo funciona?</h4>
+          <ul>
+            <li>Activa tu cámara</li>
+            <li>Apunta la cámara hacia <strong>un solo objeto</strong>, bien iluminado y centrado.</li>
+            <li>Espera unos segundos mientras el sistema detecta el objeto.</li>
+             <li>Verás el nombre del objeto en inglés y podrás escucharlo o guardarlo.</li>
+          </ul>
+        </div>
+
+        <button class="btn-flashcards" onclick="window.location.href='/api/flashcards/page/'">
+          <i class="fas fa-layer-group"></i> Flashcards
+        </button>
+      </div>
+    </main>
+  </div>
 
   <div id="message"></div>
 
@@ -179,9 +487,14 @@
     async function startCamera() {
       await fetch("/api/vision/tm/start/");
       cameraActive = true;
+      
       document.getElementById("cameraInactive").style.display = "none";
       document.getElementById("videoFeed").style.display = "block";
       document.getElementById("stopBtn").style.display = "block";
+      document.getElementById("statusBadge").style.display = "flex";
+      document.getElementById("statusBadge").classList.add("active");
+      document.getElementById("statusText").textContent = "En vivo";
+      
       showMessage("✅ Cámara activada", "#10b981");
       updateFrame();
     }
@@ -190,16 +503,22 @@
       await fetch("/api/vision/tm/stop/");
       cameraActive = false;
       clearTimeout(frameLoop);
+      
       document.getElementById("cameraInactive").style.display = "flex";
       document.getElementById("videoFeed").style.display = "none";
       document.getElementById("stopBtn").style.display = "none";
-      document.getElementById("result").textContent = "Cámara detenida.";
-      document.getElementById("actions").style.display = "none";
+      document.getElementById("statusBadge").style.display = "none";
+      document.getElementById("statusBadge").classList.remove("active");
+      document.getElementById("detectionArea").style.display = "flex";
+      document.getElementById("resultArea").style.display = "none";
+      document.getElementById("alertBox").style.display = "none";
+      
       showMessage("🔴 Cámara detenida", "#6b7280");
     }
 
     async function updateFrame() {
       if (!cameraActive) return;
+      
       try {
         const res = await fetch("/api/vision/tm/frame/");
         const data = await res.json();
@@ -209,24 +528,39 @@
           const label = data.label || "Desconocido";
           const conf = (data.confidence * 100).toFixed(1);
           currentLabel = label;
-          document.getElementById("result").textContent = `🧠 ${label} (${conf}%)`;
-          document.getElementById("actions").style.display = "flex";
+
+          if (label === "No reconocido" || conf < 80) {
+            document.getElementById("alertBox").style.display = "block";
+            document.getElementById("detectionArea").style.display = "flex";
+            document.getElementById("resultArea").style.display = "none";
+          } else {
+            document.getElementById("alertBox").style.display = "none";
+            document.getElementById("detectionArea").style.display = "none";
+            document.getElementById("resultArea").style.display = "block";
+            document.getElementById("objectName").textContent = label;
+            document.getElementById("confidenceValue").textContent = conf + "%";
+          }
         }
       } catch (err) {
         console.warn("⚠️ Error obteniendo frame:", err);
       }
+      
       frameLoop = setTimeout(updateFrame, 300);
     }
 
     function speak() {
-      if (!currentLabel) return;
+      if (!currentLabel || currentLabel === "No reconocido") return;
       const utterance = new SpeechSynthesisUtterance(currentLabel);
       utterance.lang = "en-US";
       speechSynthesis.speak(utterance);
     }
 
     async function addFlashcard() {
-      if (!currentLabel) return;
+      if (!currentLabel || currentLabel === "No reconocido") {
+        showMessage("⚠️ No puedes crear una flashcard de un objeto no reconocido.", "#ef4444");
+        return;
+      }
+
       const confirmAdd = confirm(`¿Crear flashcard para "${currentLabel}"?`);
       if (!confirmAdd) return;
 

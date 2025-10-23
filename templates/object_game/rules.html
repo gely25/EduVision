@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Reglas del Juego{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/object_game/rules.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="rules-container">
+  <div class="rules-card">
+    <h2>🧠 Reglas del juego</h2>
+    <p class="text">
+      Cada vez que muestres correctamente un objeto que ya aprendiste,
+      <strong>ganarás 10 puntos</strong>.  
+      <br><br>
+      Si fallas, podrás intentarlo otra vez.  
+      <br><br>
+      Para comenzar, asegúrate de tener al menos
+      <strong>5 palabras aprendidas</strong> en tus tarjetas de vocabulario.
+    </p>
+
+    <!-- Botones unificados -->
+    <button class="btn-continue" id="continueBtn">Continuar ▶</button>
+    <p class="skip" id="skipBtn">Saltar introducción</p>
+
+    <p class="page">3/5</p>
+
+    <div class="eva-avatar">
+      <img src="{% static 'img/eva-bot.png' %}" alt="Eva bot">
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/object_game/rules.js' %}"></script>
+{% endblock %}

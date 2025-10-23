@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Instrucciones del Juego{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/object_game/instructions.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="instructions-container">
+  <div class="instructions-card">
+    <h2>📸 ¡Vamos a empezar!</h2>
+    <p class="text">
+      Eva te pedirá que muestres ciertos objetos frente a tu cámara.
+      <br><br>
+      Por ejemplo: <strong>"Muéstrame un lápiz"</strong> ✏️  
+      Si lo reconoce correctamente, ganarás puntos y avanzarás de nivel.
+    </p>
+
+    <!-- Botones unificados -->
+    <button class="btn-continue" id="continueBtn">Continuar ▶</button>
+    <p class="skip" id="skipBtn">Saltar introducción</p>
+
+    <p class="page">2/5</p>
+
+    <div class="eva-avatar">
+      <img src="{% static 'img/eva-bot.png' %}" alt="Eva bot">
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/object_game/instructions.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Juego - EduVision{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/object_game/play.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="game-container">
+  <h2>🎯 ¡Muéstrame el objeto correcto!</h2>
+
+  <div class="status">
+    <p id="instruccion">Cuando estés listo, activa tu cámara 👇</p>
+    <p><strong>Puntaje:</strong> <span id="score">0</span> / 50</p>
+  </div>
+
+  <!-- 📸 Sección de cámara -->
+  <div class="video-wrapper" id="videoContainer">
+    <div class="status-badge" id="statusBadge" style="display: none;">
+      <i class="fas fa-circle"></i> <span id="statusText">En vivo</span>
+    </div>
+
+    <!-- 🔒 Estado: cámara inactiva -->
+    <div class="camera-inactive" id="cameraInactive">
+      <i class="fas fa-video-slash camera-icon"></i>
+      <h3>Cámara desactivada</h3>
+      <p>Activa tu cámara para comenzar la partida y mostrar los objetos que aprendiste 📚</p>
+      <button class="btn" id="startCameraBtn">
+        <i class="fas fa-play"></i> Activar cámara
+      </button>
+
+      <!-- Nuevo botón siguiente -->
+      <button class="btn" id="nextBtn" style="display:none;">➡️ Siguiente objeto</button>
+    </div>
+
+    <!-- 🎥 Vista de cámara en vivo -->
+    <img id="tm-frame" src="" alt="Vista TM" style="display:none;">
+  </div>
+
+  <!-- 🧠 Estado de juego -->
+  <p id="feedback" class="feedback"></p>
+
+  <button class="btn-secondary" id="finishBtn" style="display:none;">🏁 Terminar partida</button>
+
+  <div class="eva-avatar">
+    <img src="{% static 'img/eva-bot.png' %}" alt="Eva bot">
+  </div>
+</div>
+
+<script>
+  const palabrasJuego = {{ palabras|safe }};
+</script>
+
+{% block extra_js %}
+<script src="{% static 'js/object_game/play.js' %}"></script>
+{% endblock %}
+{% endblock %}

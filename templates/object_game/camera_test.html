@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Prueba de Cámara{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/object_game/intro_base.css' %}">
+{% endblock %}
+
+{% block content %}
+<body class="camera-bg">
+  <div class="camera-test-card">
+    <h2>📷 Prueba de cámara</h2>
+    <p class="text">
+      Antes de empezar, probemos tu cámara.  
+      Muéstrame cualquier objeto frente a la cámara para verificar que todo funcione correctamente.
+    </p>
+
+    <div class="video-container">
+      <video id="preview" autoplay playsinline></video>
+    </div>
+
+
+    <p id="cameraStatus" class="camera-status">⚠️ Esperando acceso a cámara...</p>
+
+    <button class="btn-continue" id="continueBtn">Continuar ▶</button>
+    <p class="skip" id="skipBtn">Saltar introducción</p>
+
+    <p class="page">4/5</p>
+
+    <div class="eva-avatar">
+      <img src="{% static 'img/eva-bot.png' %}" alt="Eva bot">
+    </div>
+  </div>
+</body>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/object_game/camera_test.js' %}"></script>
+{% endblock %}

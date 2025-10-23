@@ -20,6 +20,7 @@ def add_flashcard(request):
     Crea una nueva flashcard a partir del objeto reconocido actualmente por el modelo TM.
     - Usa solo el área del recuadro central (ROI) como imagen base.
     - Traduce automáticamente el nombre del objeto.
+    - Ignora casos en que el modelo devuelva "No reconocido" o similar.
     """
     if request.method != "POST":
         return JsonResponse({"error": "Método no permitido"}, status=405)
@@ -35,6 +36,14 @@ def add_flashcard(request):
     if not palabra:
         return JsonResponse({"error": "Falta palabra"}, status=400)
 
+    # 🚫 Evitar crear flashcards si el objeto no fue reconocido
+    if palabra.lower() in ["no reconocido", "none", "unknown"]:
+        print(f"⚠️ Objeto no reconocido detectado ('{palabra}'), flashcard no creada.")
+        return JsonResponse(
+            {"error": "Objeto no reconocido, no se puede crear flashcard."},
+            status=400,
+        )
+
     # 🌍 Traducción automática (si no se envía)
     if not traduccion or traduccion == "Traducción pendiente":
         try:
@@ -44,7 +53,7 @@ def add_flashcard(request):
             print("❌ Error traduciendo:", e)
 
     # 🚫 Evitar duplicados
-    if Flashcard.objects.filter(palabra=palabra).exists():
+    if Flashcard.objects.filter(palabra__iexact=palabra).exists():
         return JsonResponse({"error": "Flashcard ya existe"}, status=400)
 
     # 📸 Obtener frame actual desde la cámara TM
@@ -54,7 +63,6 @@ def add_flashcard(request):
         return JsonResponse({"error": "No hay frame disponible"}, status=404)
 
     base64_frame = frame_data["roi"]  # ✅ usamos SOLO el recorte (ROI)
-
     flashcard = Flashcard(palabra=palabra, traduccion=traduccion)
 
     try:

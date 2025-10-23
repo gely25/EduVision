@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sigue aprendiendo - EduVision{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/object_game/insufficient.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="insufficient-container">
+  <div class="card">
+    <h2>😅 Aún no puedes jugar</h2>
+    <p>
+      Debes dominar al menos <strong>5 flashcards</strong> antes de poder jugar.
+    </p>
+    <p>Te faltan <strong>{{ faltan }}</strong> más para desbloquear el modo de juego 🎮</p>
+
+    <a href="/api/flashcards/review/" class="btn">
+      📚 Ir a estudiar
+    </a>
+  </div>
+</div>
+{% endblock %}

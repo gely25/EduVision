@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Aún no puedes jugar{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/object_game/intro_base.css' %}">
+{% endblock %}
+
+{% block content %}
+<body class="rules-bg">
+  <div class="rules-card">
+    <h2>😅 Aún no puedes jugar</h2>
+    <p class="text">
+      Has aprendido <strong>{{ cantidad }}</strong> palabra{% if cantidad != 1 %}s{% endif %}.
+      <br><br>
+      Necesitas al menos <strong>5</strong> para comenzar el juego.
+    </p>
+
+    <button class="btn-continue" id="learnBtn">Ir a tarjetas de estudio 📚</button>
+    <p class="skip" id="skipBtn">Volver al inicio</p>
+
+    <div class="eva-avatar">
+      <img src="{% static 'img/eva-bot.png' %}" alt="Eva bot">
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('learnBtn').onclick = () => {
+      window.location.href = '/api/flashcards/review/';
+    };
+    document.getElementById('skipBtn').onclick = () => {
+      window.location.href = '/api/object_game/intro/';
+    };
+  </script>
+</body>
+{% endblock %}

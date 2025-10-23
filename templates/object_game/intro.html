@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Introducción del Juego{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/object_game/intro.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="intro-container">
+  <div class="intro-card">
+    <div class="emoji">👋</div>
+    <h1>¡Hola! Soy <span class="name">Eva</span></h1>
+    <p class="subtitle">tu guía de aprendizaje.</p>
+
+    <p class="description">
+      Vamos a jugar y aprender inglés reconociendo objetos con tu cámara.
+    </p>
+
+    <button class="btn-continue" id="continueBtn">Continuar ▶</button>
+    <p class="skip" id="skipIntro">Saltar Introducción</p>
+
+    <p class="page">1/5</p>
+
+    <div class="eva-avatar">
+      <img src="{% static 'img/eva-bot.png' %}" alt="Eva bot">
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/object_game/intro.js' %}"></script>
+{% endblock %}

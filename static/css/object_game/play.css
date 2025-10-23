@@ -1,0 +1,158 @@
+/* === ESTILO GENERAL === */
+body {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: 'Segoe UI', sans-serif;
+  color: #fff;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+}
+
+.game-container {
+  background: rgba(45, 45, 68, 0.9);
+  border-radius: 25px;
+  padding: 35px 50px;
+  text-align: center;
+  width: 90%;
+  max-width: 900px;
+  box-shadow: 0 6px 25px rgba(0,0,0,0.3);
+}
+
+/* === TITULO Y ESTADO === */
+h2 {
+  font-size: 1.8em;
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+
+.status p {
+  margin: 5px 0;
+  font-size: 1.2em;
+}
+
+/* === VIDEO / CAMARA === */
+.video-wrapper {
+  background: #1e1e2e;
+  border-radius: 20px;
+  overflow: hidden;
+  margin: 25px auto;
+  width: 480px;
+  height: 360px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Estado “en vivo” */
+.status-badge {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background: #ef4444;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.85em;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.status-badge.active {
+  background: #10b981;
+}
+
+/* Estado cámara inactiva */
+.camera-inactive {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 30px;
+  color: #fff;
+}
+
+.camera-icon {
+  font-size: 60px;
+  opacity: 0.5;
+  margin-bottom: 20px;
+}
+
+.camera-inactive h3 {
+  font-size: 1.3em;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.camera-inactive p {
+  color: rgba(255,255,255,0.8);
+  font-size: 1em;
+  margin-bottom: 20px;
+}
+
+#tm-frame {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 20px;
+}
+
+/* === BOTONES === */
+.btn {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1em;
+  transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+}
+
+.btn-secondary {
+  background: #ef4444;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+  margin-top: 20px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 1em;
+  display: none;
+}
+
+.btn-secondary:hover {
+  background: #dc2626;
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+}
+
+/* === FEEDBACK Y EVA === */
+.feedback {
+  margin-top: 10px;
+  font-size: 1.1em;
+  font-weight: bold;
+}
+
+.eva-avatar {
+  margin-top: 25px;
+}
+
+.eva-avatar img {
+  width: 80px;
+  filter: drop-shadow(0 0 5px rgba(255,255,255,0.3));
+}

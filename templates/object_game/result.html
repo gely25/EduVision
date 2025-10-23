@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Resultado del Juego{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/object_game/intro_base.css' %}">
+{% endblock %}
+
+{% block content %}
+<body class="rules-bg">
+  <div class="rules-card">
+    <h2>🏆 ¡Excelente trabajo!</h2>
+    <p class="text">
+      Has completado esta ronda con un puntaje de 
+      <strong>{{ puntaje }}</strong> de {{ max_puntaje }} puntos.
+    </p>
+    <button class="btn-continue" onclick="window.location.href='/api/object_game/start/'">Jugar otra vez 🔁</button>
+    <p class="skip" onclick="window.location.href='/api/flashcards/review/'">Ir a tarjetas de estudio 📚</p>
+    <div class="eva-avatar">
+      <img src="{% static 'img/eva-bot.png' %}" alt="Eva bot">
+    </div>
+  </div>
+</body>
+{% endblock %}

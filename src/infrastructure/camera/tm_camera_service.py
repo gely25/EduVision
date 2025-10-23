@@ -14,7 +14,6 @@ from keras.layers import TFSMLayer
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 MODEL_PATH = os.path.join(BASE_DIR, "infrastructure", "ai_models", "teachable_machine", "model.savedmodel")
 
-
 print("🔍 Intentando cargar modelo desde:", MODEL_PATH)
 print("📁 Existe?", os.path.exists(MODEL_PATH))
 
@@ -36,14 +35,17 @@ last_frame = None
 last_label = ""
 last_confidence = 0.0
 frame_lock = threading.Lock()
-CONFIDENCE_THRESHOLD = 0.8
-
+CONFIDENCE_THRESHOLD = 0.8  # 🔧 Ajustable (sube a 0.85 si aún hay falsos positivos)
 
 # ======================================
 # 🎥 Bucle de cámara
 # ======================================
 
 def tm_camera_loop():
+    """
+    Captura frames en tiempo real, realiza inferencia con el modelo TM,
+    y actualiza las variables globales (frame, label, confidence).
+    """
     global camera_active, last_frame, last_label, last_confidence
 
     cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
@@ -60,8 +62,10 @@ def tm_camera_loop():
 
         h, w, _ = frame.shape
         x1, y1, x2, y2 = w // 4, h // 4, w * 3 // 4, h * 3 // 4
-        cv2.rectangle(frame, (x1, y1), (x2, y2), (200, 200, 200), 2)
         roi = frame[y1:y2, x1:x2]
+
+        label = "No reconocido"
+        confidence = 0.0
 
         if model is not None:
             try:
@@ -82,22 +86,31 @@ def tm_camera_loop():
                 pred_label = CLASS_NAMES[pred_index]
                 confidence = float(output[pred_index])
 
-                # === Guardar resultado ===
-                with frame_lock:
-                    last_frame = frame.copy()
-                    last_label = pred_label
-                    last_confidence = confidence
+                # === Nueva lógica: marcar “no reconocido” si la confianza es baja ===
+                if confidence < CONFIDENCE_THRESHOLD:
+                    label = "No reconocido"
+                    color = (0, 0, 255)  # 🔴 rojo (desconocido)
+                else:
+                    label = pred_label
+                    color = (0, 255, 0)  # 🟢 verde (válido)
 
-                # === Mostrar texto (solo en debug local, no necesario para servidor) ===
+                # === Dibujar recuadro y texto ===
+                cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
                 cv2.putText(
                     frame,
-                    f"{pred_label} ({confidence:.2f})",
+                    f"{label} ({confidence:.2f})",
                     (10, 30),
                     cv2.FONT_HERSHEY_SIMPLEX,
                     0.9,
-                    (0, 255, 0) if confidence >= CONFIDENCE_THRESHOLD else (180, 180, 180),
+                    color,
                     2,
                 )
+
+                # === Guardar resultados globales ===
+                with frame_lock:
+                    last_frame = frame.copy()
+                    last_label = label
+                    last_confidence = confidence
 
             except Exception as e:
                 print("❌ Error en predicción TM:", e)
@@ -106,7 +119,6 @@ def tm_camera_loop():
 
     cap.release()
     print("🛑 Cámara TM detenida.")
-
 
 # ======================================
 # 🚀 Control del hilo
@@ -120,39 +132,38 @@ def start_tm_camera():
         camera_thread.start()
         print("🚀 Cámara TM iniciada en hilo separado.")
 
-
 def stop_tm_camera():
     global camera_active
     camera_active = False
     print("🛑 Cámara TM detenida por solicitud.")
-
 
 # ======================================
 # 🖼️ Obtener frame actual
 # ======================================
 
 def get_tm_base64_frame():
+    """
+    Devuelve tanto el frame completo como el recorte (ROI)
+    codificados en base64, junto con la etiqueta y confianza.
+    """
     global last_frame, last_label, last_confidence
 
     if last_frame is None:
         return None
 
-    # --- 🔹 Recorte del área central (sin afectar lo que se muestra) ---
     h, w, _ = last_frame.shape
     x1, y1, x2, y2 = w // 4, h // 4, w * 3 // 4, h * 3 // 4
     roi = last_frame[y1:y2, x1:x2]
 
-    # --- 🔹 Codificar frame completo (para visualización) ---
     _, buffer_full = cv2.imencode(".jpg", last_frame)
     frame_base64_full = base64.b64encode(buffer_full).decode("utf-8")
 
-    # --- 🔹 Codificar solo el recorte (para flashcard) ---
     _, buffer_roi = cv2.imencode(".jpg", roi)
     frame_base64_roi = base64.b64encode(buffer_roi).decode("utf-8")
 
     return {
-        "frame": f"data:image/jpeg;base64,{frame_base64_full}",  # lo que se ve
-        "roi": f"data:image/jpeg;base64,{frame_base64_roi}",      # lo que se recorta
+        "frame": f"data:image/jpeg;base64,{frame_base64_full}",
+        "roi": f"data:image/jpeg;base64,{frame_base64_roi}",
         "label": last_label or "none",
         "confidence": last_confidence or 0.0,
     }
