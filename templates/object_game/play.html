@@ -12,44 +12,54 @@
 <div class="game-container">
   <h2>🎯 ¡Muéstrame el objeto correcto!</h2>
 
+  <!-- 🧠 Estado del jugador -->
   <div class="status">
     <p id="instruccion">Cuando estés listo, activa tu cámara 👇</p>
-    <p><strong>Puntaje:</strong> <span id="score">0</span> / 50</p>
+    <p><strong>Puntaje:</strong> <span id="score">0</span> / {{ palabras|length|default:50|add:"0" }}</p>
   </div>
 
-  <!-- 📸 Sección de cámara -->
+  <!-- 📸 Zona de cámara -->
   <div class="video-wrapper" id="videoContainer">
-    <div class="status-badge" id="statusBadge" style="display: none;">
+
+    <!-- 🔴 Indicador de cámara activa -->
+    <div class="status-badge" id="statusBadge" style="display:none;">
       <i class="fas fa-circle"></i> <span id="statusText">En vivo</span>
     </div>
 
-    <!-- 🔒 Estado: cámara inactiva -->
+    <!-- 🔒 Cámara inactiva -->
     <div class="camera-inactive" id="cameraInactive">
       <i class="fas fa-video-slash camera-icon"></i>
       <h3>Cámara desactivada</h3>
       <p>Activa tu cámara para comenzar la partida y mostrar los objetos que aprendiste 📚</p>
-      <button class="btn" id="startCameraBtn">
-        <i class="fas fa-play"></i> Activar cámara
-      </button>
 
-      <!-- Nuevo botón siguiente -->
-      <button class="btn" id="nextBtn" style="display:none;">➡️ Siguiente objeto</button>
+      <!-- Botones de control -->
+      <div class="button-group">
+        <button class="btn" id="startCameraBtn">
+          <i class="fas fa-play"></i> Activar cámara
+        </button>
+        <button class="btn next" id="nextBtn" style="display:none;">
+          ➡️ Siguiente objeto
+        </button>
+      </div>
     </div>
 
-    <!-- 🎥 Vista de cámara en vivo -->
-    <img id="tm-frame" src="" alt="Vista TM" style="display:none;">
+    <!-- 🎥 Imagen del frame detectado -->
+    <img id="tm-frame" src="" alt="Vista de cámara" style="display:none;">
   </div>
 
-  <!-- 🧠 Estado de juego -->
+  <!-- 💬 Mensajes y feedback -->
   <p id="feedback" class="feedback"></p>
 
+  <!-- 🏁 Botón de finalizar -->
   <button class="btn-secondary" id="finishBtn" style="display:none;">🏁 Terminar partida</button>
 
+  <!-- 🤖 Avatar de Eva -->
   <div class="eva-avatar">
     <img src="{% static 'img/eva-bot.png' %}" alt="Eva bot">
   </div>
 </div>
 
+<!-- 🔤 Pasamos las palabras desde Django al JS -->
 <script>
   const palabrasJuego = {{ palabras|safe }};
 </script>

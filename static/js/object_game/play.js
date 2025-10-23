@@ -50,9 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
       statusBadge.classList.add("active");
       statusText.textContent = "En vivo";
 
-      // Inicia intervalos
-      frameInterval = setInterval(actualizarFrame, 800);
-      detectInterval = setInterval(verificarDeteccion, 1500);
+      iniciarIntervalos();
 
       // Verificación si no llega imagen
       setTimeout(() => {
@@ -68,7 +66,18 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // =====================================================
-  // 3️⃣ Actualizar frame del servidor
+  // 3️⃣ Función para iniciar intervalos
+  // =====================================================
+  function iniciarIntervalos() {
+    clearInterval(frameInterval);
+    clearInterval(detectInterval);
+
+    frameInterval = setInterval(actualizarFrame, 800);
+    detectInterval = setInterval(verificarDeteccion, 1500);
+  }
+
+  // =====================================================
+  // 4️⃣ Actualizar frame del servidor
   // =====================================================
   function actualizarFrame() {
     if (!cameraActive) return;
@@ -87,7 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =====================================================
-  // 4️⃣ Verificar detección
+  // 5️⃣ Verificar detección
   // =====================================================
   function verificarDeteccion() {
     if (!jugando || !cameraActive) return;
@@ -101,7 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =====================================================
-  // 5️⃣ Procesar etiqueta detectada
+  // 6️⃣ Procesar etiqueta detectada
   // =====================================================
   function procesarEtiqueta(label) {
     const esperado = String(palabrasJuego[idx]).toLowerCase().trim();
@@ -114,6 +123,9 @@ document.addEventListener("DOMContentLoaded", () => {
       scoreDisplay.textContent = score;
       feedback.innerHTML = `✅ ¡Correcto! Era <strong>${esperado}</strong>`;
       feedback.style.color = "#10b981";
+
+      // 🔹 Guardar puntaje dinámico en backend
+      guardarPuntaje(score);
 
       detenerCamaraTemporal();
 
@@ -135,7 +147,25 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =====================================================
-  // 6️⃣ Detener cámara temporalmente tras acierto
+  // 7️⃣ Guardar puntaje dinámico
+  // =====================================================
+  async function guardarPuntaje(score) {
+    try {
+      await fetch("/api/object_game/update-score/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCookie("csrftoken"),
+        },
+        body: JSON.stringify({ score }),
+      });
+    } catch (e) {
+      console.warn("⚠️ No se pudo guardar el puntaje dinámico:", e);
+    }
+  }
+
+  // =====================================================
+  // 8️⃣ Detener cámara temporalmente tras acierto
   // =====================================================
   async function detenerCamaraTemporal() {
     try {
@@ -151,20 +181,22 @@ document.addEventListener("DOMContentLoaded", () => {
     frameImg.style.display = "none";
     statusBadge.style.display = "none";
     cameraInactive.style.display = "flex";
-    cameraInactive.querySelector("p").textContent = "Presiona 'Activar cámara' cuando estés listo para el siguiente objeto 📷";
+    cameraInactive.querySelector("p").textContent =
+      "Presiona 'Activar cámara' cuando estés listo para el siguiente objeto 📷";
   }
 
   // =====================================================
-  // 7️⃣ Siguiente objeto
+  // 9️⃣ Siguiente objeto
   // =====================================================
   nextBtn.addEventListener("click", () => {
     nextBtn.style.display = "none";
     feedback.textContent = "";
-    cameraInactive.querySelector("p").textContent = "Activa tu cámara para mostrar el siguiente objeto 📚";
+    cameraInactive.querySelector("p").textContent =
+      "Activa tu cámara para mostrar el siguiente objeto 📚";
   });
 
   // =====================================================
-  // 8️⃣ Terminar partida
+  // 🔟 Terminar partida
   // =====================================================
   function terminarJuego() {
     jugando = false;
@@ -179,7 +211,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =====================================================
-  // 9️⃣ Botón para finalizar
+  // 1️⃣1️⃣ Finalizar
   // =====================================================
   finishBtn.addEventListener("click", async () => {
     try {
@@ -187,4 +219,22 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (_) {}
     window.location.href = "/api/object_game/result/";
   });
+
+  // =====================================================
+  // 1️⃣2️⃣ Obtener CSRF
+  // =====================================================
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      const cookies = document.cookie.split(";");
+      for (let cookie of cookies) {
+        const trimmed = cookie.trim();
+        if (trimmed.startsWith(name + "=")) {
+          cookieValue = decodeURIComponent(trimmed.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
 });

@@ -13,4 +13,5 @@ urlpatterns = [
     path("play/", views_object_game.play_view, name="play_view"),
     path("detect/", views_object_game.detectar_objeto, name="detectar_objeto"),
     path("result/", views_object_game.result_view, name="result_view"),
+    path("update-score/", views_object_game.update_score_view, name="update_score_view")
 ]
