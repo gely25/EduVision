@@ -1,0 +1,195 @@
+/* =====================================
+   🔐 EduVision · Login & Registro
+   ===================================== */
+
+body {
+  background: linear-gradient(135deg, #6C78B0 0%, #182871 100%);
+  color: #2d2d44;
+  min-height: 100vh;
+}
+
+/* --- Estructura principal --- */
+.auth-modern {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 140px);
+}
+
+.auth-card {
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 22px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+  padding: 45px 55px;
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.auth-card:hover {
+  transform: translateY(-2px);
+}
+
+/* --- Logo del osito --- */
+.bear-logo {
+  width: 90px;
+  height: 90px;
+  margin-bottom: 20px;
+}
+
+/* --- Títulos --- */
+.auth-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #3a2d77;
+  margin-bottom: 6px;
+}
+
+.auth-subtitle {
+  color: #7a7a8c;
+  margin-bottom: 25px;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+/* --- Campos --- */
+.field {
+  margin-bottom: 18px;
+  text-align: left;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.input-icon {
+  display: flex;
+  align-items: center;
+  background: #F2F3FF;
+  border-radius: 12px;
+  padding: 10px 12px;
+  border: 1px solid #d9dbe9;
+  transition: all 0.2s ease;
+}
+
+.input-icon:focus-within {
+  border-color: #6c63ff;
+  box-shadow: 0 0 0 3px rgba(108,99,255,0.2);
+}
+
+.input-icon i {
+  color: #6c63ff;
+  margin-right: 10px;
+  font-size: 16px;
+}
+
+.input-icon input {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+  font-size: 0.95rem;
+  color: #2d2d44;
+}
+
+/* --- Botones --- */
+.btn-primary {
+  width: 100%;
+  background: linear-gradient(135deg, #6c63ff 0%, #4f47d0 100%);
+  border: none;
+  color: #fff;
+  padding: 13px 20px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(92, 72, 200, 0.4);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #5a52dd 0%, #3c38a1 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(92, 72, 200, 0.5);
+}
+
+.btn-outline {
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  background: transparent;
+  border: 2px solid #6c63ff;
+  color: #6c63ff;
+  font-weight: 700;
+  padding: 10px 18px;
+  border-radius: 12px;
+  transition: all 0.25s ease;
+  margin-top: 10px;
+}
+
+.btn-outline:hover {
+  background: #6c63ff;
+  color: white;
+}
+
+/* --- Enlaces y divisores --- */
+.links {
+  margin-top: 20px;
+  font-size: 0.9rem;
+  color: #4c4c6d;
+}
+
+.links a {
+  color: #6c63ff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.links a:hover {
+  text-decoration: underline;
+}
+
+/* --- Mensajes --- */
+.messages {
+  list-style: none;
+  margin-bottom: 20px;
+  padding: 0;
+}
+
+.msg {
+  background: #f5f7ff;
+  border-left: 4px solid var(--primary, #7c5cff);
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.msg.error {
+  background: #ffecec;
+  border-left-color: #ff6b6b;
+  color: #c23b3b;
+}
+
+.msg.success {
+  background: #e9ffec;
+  border-left-color: #4caf50;
+  color: #2e7d32;
+}
+
+/* --- Responsivo --- */
+@media (max-width: 480px) {
+  .auth-card {
+    margin: 20px;
+    padding: 30px;
+  }
+
+  .auth-title {
+    font-size: 1.5rem;
+  }
+}

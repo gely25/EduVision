@@ -33,7 +33,9 @@ INSTALLED_APPS = [
 
 
 
-
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/api/object_game/play/'  
+LOGOUT_REDIRECT_URL = '/accounts/login/'
 
 
 MIDDLEWARE = [
@@ -99,7 +101,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es'
 
 TIME_ZONE = 'UTC'
 
@@ -131,3 +133,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # --- Archivos multimedia (imagenes subidas) ---
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+
+# === Configuración de correo para desarrollo ===
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'no-reply@eduvision.com'

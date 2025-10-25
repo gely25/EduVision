@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Iniciar Sesión · EduVision{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="auth-modern">
+  <div class="auth-card">
+    <img src="{% static 'img/bear.svg' %}" alt="EduVision Bear" class="bear-logo" />
+
+    <h1 class="auth-title">¡Hola de nuevo!</h1>
+    <p class="auth-subtitle">Continuemos aprendiendo juntos</p>
+
+    <form method="post" class="auth-form" novalidate>
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+
+      <div class="field">
+        <label for="id_username">Correo electrónico:</label>
+        <div class="input-icon">
+          <i class="fa fa-envelope"></i>
+          {{ form.username }}
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="id_password">Contraseña:</label>
+        <div class="input-icon">
+          <i class="fa fa-lock"></i>
+          {{ form.password }}
+        </div>
+      </div>
+
+      <button type="submit" class="btn-primary">Iniciar Sesión</button>
+
+      <div class="links">
+        <a href="{% url 'password_reset' %}">¿Olvidaste tu contraseña?</a>
+        <hr />
+        <p>¿Primera vez en EduVision?</p>
+        <a href="{% url 'signup' %}" class="btn-outline">Crear Cuenta Nueva</a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

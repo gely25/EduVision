@@ -2,20 +2,94 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{% block title %}EduVision{% endblock %}</title>
 
-  <!-- CSS global -->
-  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+  <!-- 🎨 Estilos globales -->
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+
+  <!-- 🎨 Estilos específicos por vista -->
   {% block extra_css %}{% endblock %}
+
+  <!-- Tipografía moderna -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Íconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
 
 <body>
-  {% block content %}{% endblock %}
+  <!-- ====== HEADER GLOBAL ====== -->
+  <header class="ev-header">
+    <div class="ev-container ev-header-inner">
+      <a class="brand" href="{% url 'home' %}">
+        <i class="fa-solid fa-camera"></i> EduVision
+      </a>
 
-  <!-- JS global -->
-  <script src="{% static 'js/main.js' %}"></script>
+      <nav>
+        {% if request.user.is_authenticated %}
+          <span class="user-pill">Hola, {{ request.user.username }}</span>
+
+          <!-- 🔒 Logout seguro -->
+          <form id="logout-form" method="post" action="{% url 'logout' %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn ghost">
+              <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
+            </button>
+          </form>
+
+        {% else %}
+          {% if request.path == '/accounts/login/' %}
+            <!-- En LOGIN → solo REGISTRARSE -->
+            <a class="btn ghost" href="{% url 'signup' %}">
+              <i class="fa-solid fa-user-plus"></i> Registrarse
+            </a>
+
+          {% elif request.path == '/api/signup/' %}
+            <!-- En SIGNUP → solo INICIAR SESIÓN -->
+            <a class="btn ghost" href="{% url 'login' %}">
+              <i class="fa-solid fa-user"></i> Iniciar sesión
+            </a>
+
+          {% else %}
+            <!-- En HOME o cualquier otra página no autenticada -->
+            <a class="btn ghost" href="{% url 'login' %}">
+              <i class="fa-solid fa-user"></i> Iniciar sesión
+            </a>
+            <a class="btn ghost" href="{% url 'signup' %}">
+              <i class="fa-solid fa-user-plus"></i> Registrarse
+            </a>
+          {% endif %}
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <!-- ====== CONTENIDO ====== -->
+  <main class="ev-main">
+    <div class="ev-container">
+      {% if messages %}
+        <ul class="messages">
+          {% for message in messages %}
+            <li class="msg {{ message.tags }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+
+  <!-- ====== FOOTER ====== -->
+  <footer class="ev-footer">
+    <div class="ev-container">© {{ now|date:'Y' }} EduVision</div>
+  </footer>
+
+  <!-- ====== JS GLOBAL ====== -->
+  <script src="{% static 'js/auth.js' %}"></script>
   {% block extra_js %}{% endblock %}
 </body>
 </html>

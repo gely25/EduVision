@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}EduVision · Aprende con Tecnología Visual{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Sección principal -->
+<section class="hero">
+  <div class="hero-content">
+    <h1>Aprende <span class="accent">Inglés</span><br>con <span class="accent">Tecnología Visual</span></h1>
+    <p class="hero-subtext">
+      Sistema educativo con reconocimiento de objetos, gestos y retroalimentación inmediata
+      para un aprendizaje divertido y efectivo.
+    </p>
+
+    <ul class="hero-features">
+      <li><i class="fa-solid fa-check"></i> Reconocimiento de Objetos</li>
+      <li><i class="fa-solid fa-check"></i> Flashcards Inteligentes</li>
+      <li><i class="fa-solid fa-check"></i> Juegos Interactivos</li>
+    </ul>
+
+    <a href="{% url 'login' %}" class="btn-primary">
+      <i class="fa-solid fa-play"></i> Iniciar
+    </a>
+  </div>
+</section>
+
+<!-- Características -->
+<section class="features">
+  <h2>Características Principales</h2>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <i class="fa-solid fa-camera feature-icon"></i>
+      <h3>Reconocimiento de Objetos</h3>
+      <p>
+        Usa tu cámara para identificar objetos en tiempo real y aprende su nombre en inglés al instante con pronunciación nativa.
+      </p>
+    </div>
+
+    <div class="feature-card">
+      <i class="fa-solid fa-clone feature-icon"></i>
+      <h3>Flashcards Inteligentes</h3>
+      <p>
+        Sistema de tarjetas adaptativo que se ajusta a tu ritmo de aprendizaje y refuerza las palabras que más necesitas practicar.
+      </p>
+    </div>
+
+    <div class="feature-card">
+      <i class="fa-solid fa-gamepad feature-icon"></i>
+      <h3>Juego Interactivo</h3>
+      <p>
+        Participa en un juego dinámico donde se te pide mostrar objetos en inglés. Usa tu cámara para responder y recibe retroalimentación instantánea.
+      </p>
+    </div>
+  </div>
+</section>
+{% endblock %}

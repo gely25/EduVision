@@ -1,0 +1,126 @@
+/* ===========================================
+   🏠 EduVision · Página principal (Home)
+   =========================================== */
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #677BE5 0%, #39447F 96%);
+  color: #fff;
+  margin: 0;
+}
+
+/* --- Hero principal --- */
+.hero {
+  text-align: center;
+  padding: 100px 20px 60px;
+  max-width: 900px;
+  margin: auto;
+}
+
+.hero h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.accent {
+  color: #E0D6FF;
+}
+
+.hero-subtext {
+  font-size: 1.05rem;
+  color: #d9d9e8;
+  margin-top: 15px;
+  margin-bottom: 30px;
+}
+
+.hero-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto 40px;
+  text-align: left;
+  display: inline-block;
+}
+
+.hero-features li {
+  margin: 8px 0;
+  font-size: 1rem;
+  color: #f2f2ff;
+}
+
+.hero-features i {
+  color: #00ff9d;
+  margin-right: 8px;
+}
+
+/* --- Botón principal --- */
+.btn-primary {
+  display: inline-block;
+  background: #1A1038;
+  color: white;
+  padding: 14px 40px;
+  border-radius: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.3);
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: #24144C;
+  transform: translateY(-2px);
+}
+
+/* --- Sección de características --- */
+.features {
+  text-align: center;
+  padding: 80px 20px 100px;
+  background: transparent;
+}
+
+.features h2 {
+  font-size: 1.8rem;
+  color: #fff;
+  margin-bottom: 40px;
+}
+
+.features-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 25px;
+}
+
+.feature-card {
+  background: #7E87B6;
+  color: #1A1038;
+  border-radius: 20px;
+  width: 300px;
+  padding: 25px 20px;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.35);
+}
+
+.feature-icon {
+  font-size: 40px;
+  color: #1A1038;
+  margin-bottom: 15px;
+}
+
+.feature-card h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.feature-card p {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #1A1038;
+}
