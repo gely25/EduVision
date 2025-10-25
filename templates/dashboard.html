@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Inicio · EduVision{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <h1>Aprende <strong>Inglés</strong> con <strong>Tecnología Visual</strong></h1>
+  <p>Sistema de Educación con reconocimiento de objetos, gestos y retroalimentación inmediata para un aprendizaje divertido y efectivo.</p>
+
+  <div class="welcome-card">
+    <h2>¡Hola, {{ nombre|title }}! 👋</h2>
+    <p>Comencemos tu camino de aprendizaje</p>
+
+    <div class="stats">
+      <div>
+        <h3 id="aprendidasCount">{{ aprendidas|default:"0" }}</h3>
+        <p>Palabras Aprendidas</p>
+      </div>
+      <div>
+        <h3 id="pendientesCount">{{ pendientes|default:"0" }}</h3>
+        <p>Palabras Pendientes</p>
+      </div>
+    </div>
+
+    <a href="{% url 'tm_live_view' %}" class="btn-primary">
+      <i class="fa-solid fa-camera"></i> COMENZAR
+    </a>
+  </div>
+</section>
+
+<section class="learning-options">
+  <h2>¿Qué quieres hacer hoy?</h2>
+
+  <div class="options-grid">
+    <!-- 🔹 Opción 1 -->
+    <div class="option-card">
+      <i class="fa-solid fa-camera icon"></i>
+      <h3>Reconocimiento de Objetos</h3>
+      <p>Usa tu cámara para identificar objetos en tiempo real y aprende su nombre en inglés al instante con pronunciación nativa.</p>
+      <a href="{% url 'tm_live_view' %}" class="btn-secondary">Iniciar Ahora →</a>
+    </div>
+
+    <!-- 🔹 Opción 2 -->
+    <div class="option-card">
+      <i class="fa-solid fa-clone icon"></i>
+      <h3>Flashcards Inteligentes</h3>
+      <p>Sistema de tarjetas adaptativo que se ajusta a tu ritmo de aprendizaje y refuerza las palabras que más necesitas practicar.</p>
+      <a href="{% url 'flashcards_page' %}" class="btn-secondary">Repasar Ahora →</a>
+    </div>
+
+    <!-- 🔹 Opción 3 -->
+    <div class="option-card">
+      <i class="fa-solid fa-gamepad icon"></i>
+      <h3>Juego Interactivo</h3>
+      <p>Participa en un juego dinámico donde se te pide mostrar objetos en inglés. Usa tu cámara para responder y recibe retroalimentación instantánea.</p>
+      <a href="{% url 'start_view' %}" class="btn-secondary">Jugar Ahora →</a>
+    </div>
+  </div>
+</section>
+
+<script>
+  // 🔄 Actualiza los contadores en tiempo real desde el backend
+  async function updateDashboardCounters() {
+    try {
+      const res = await fetch("{% url 'dashboard_summary_api' %}");
+      const data = await res.json();
+
+      if (data.counters) {
+        document.querySelector("#aprendidasCount").innerText = data.counters.aprendidas;
+        document.querySelector("#pendientesCount").innerText = data.counters.pendientes;
+      }
+    } catch (err) {
+      console.error("Error al actualizar los contadores:", err);
+    }
+  }
+
+  // Se ejecuta cada 5 segundos automáticamente
+  setInterval(updateDashboardCounters, 5000);
+</script>
+{% endblock %}

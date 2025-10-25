@@ -34,7 +34,7 @@ INSTALLED_APPS = [
 
 
 LOGIN_URL = '/accounts/login/'
-LOGIN_REDIRECT_URL = '/api/object_game/play/'  
+LOGIN_REDIRECT_URL = '/api/dashboard/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
 
 

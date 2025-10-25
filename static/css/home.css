@@ -1,20 +1,25 @@
 /* ===========================================
-   🏠 EduVision · Página principal (Home)
+   🎨 EduVision Dashboard Estilo Definitivo
+   Paleta:
+   - Fondo: #677BE5 → #39447F
+   - Header/Botones: #220D56
+   - Cards: #7E87B6
    =========================================== */
 
 body {
   font-family: 'Inter', sans-serif;
   background: linear-gradient(135deg, #677BE5 0%, #39447F 96%);
-  color: #fff;
+  min-height: 100vh;
+  color: #2d2d44;
   margin: 0;
+  overflow-x: hidden;
 }
 
-/* --- Hero principal --- */
+/* ====== Sección principal (Hero) ====== */
 .hero {
   text-align: center;
-  padding: 100px 20px 60px;
-  max-width: 900px;
-  margin: auto;
+  padding: 6rem 1rem 4rem;
+  color: #fff;
 }
 
 .hero h1 {
@@ -22,6 +27,7 @@ body {
   font-weight: 800;
   color: #fff;
   line-height: 1.2;
+  margin-bottom: 1rem;
 }
 
 .accent {
@@ -29,98 +35,155 @@ body {
 }
 
 .hero-subtext {
-  font-size: 1.05rem;
-  color: #d9d9e8;
-  margin-top: 15px;
-  margin-bottom: 30px;
+  font-size: 1.1rem;
+  color: #e2e0f5;
+  max-width: 700px;
+  margin: 0 auto 3rem;
+  line-height: 1.6;
 }
 
-.hero-features {
-  list-style: none;
-  padding: 0;
-  margin: 0 auto 40px;
-  text-align: left;
-  display: inline-block;
+/* ====== Panel del usuario ====== */
+.user-summary {
+  background: #fff;
+  color: #2d2d44;
+  border-radius: 20px;
+  padding: 2rem 2.5rem;
+  max-width: 750px;
+  margin: 0 auto 4rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  transition: transform 0.25s ease;
 }
 
-.hero-features li {
-  margin: 8px 0;
-  font-size: 1rem;
-  color: #f2f2ff;
+.user-summary:hover {
+  transform: translateY(-4px);
 }
 
-.hero-features i {
-  color: #00ff9d;
-  margin-right: 8px;
+.user-header h2 {
+  font-size: 1.9rem;
+  color: #220D56;
+  margin-bottom: 0.4rem;
 }
 
-/* --- Botón principal --- */
-.btn-primary {
-  display: inline-block;
-  background: #1A1038;
-  color: white;
-  padding: 14px 40px;
-  border-radius: 12px;
+.user-header p {
+  color: #666;
+  font-size: 0.95rem;
+}
+
+/* ====== Contadores ====== */
+.stats {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 3rem;
+  margin: 2rem 0;
+}
+
+.stat-card {
+  text-align: center;
+}
+
+.stat-number {
+  display: block;
+  font-size: 2.6rem;
   font-weight: 700;
+  color: #220D56;
+}
+
+.stat-label {
+  display: block;
+  font-size: 0.9rem;
+  color: #777;
+}
+
+/* ====== Botón principal ====== */
+.start-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #220D56;
+  color: #fff;
+  font-weight: 600;
+  padding: 14px 36px;
+  border-radius: 12px;
   text-decoration: none;
-  box-shadow: 0 6px 14px rgba(0,0,0,0.3);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease;
 }
 
-.btn-primary:hover {
-  background: #24144C;
+.start-btn:hover {
+  background: #3A2D7F;
   transform: translateY(-2px);
 }
 
-/* --- Sección de características --- */
+/* ====== Sección de características ====== */
 .features {
   text-align: center;
-  padding: 80px 20px 100px;
-  background: transparent;
+  padding: 3rem 1rem 6rem;
+  color: #fff;
 }
 
 .features h2 {
-  font-size: 1.8rem;
-  color: #fff;
-  margin-bottom: 40px;
+  font-size: 2rem;
+  margin-bottom: 2.5rem;
 }
 
 .features-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 25px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
 .feature-card {
   background: #7E87B6;
   color: #1A1038;
   border-radius: 20px;
-  width: 300px;
-  padding: 25px 20px;
-  box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+  padding: 2rem;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .feature-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.35);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.35);
 }
 
 .feature-icon {
-  font-size: 40px;
-  color: #1A1038;
-  margin-bottom: 15px;
+  font-size: 2rem;
+  color: #220D56;
+  margin-bottom: 1rem;
 }
 
 .feature-card h3 {
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   font-weight: 700;
   margin-bottom: 10px;
+  color: #1A1038;
 }
 
 .feature-card p {
-  font-size: 0.95rem;
+  font-size: 0.93rem;
   line-height: 1.5;
   color: #1A1038;
+}
+
+/* ====== Botones secundarios en cards ====== */
+.btn-primary.small {
+  display: inline-block;
+  background: #220D56;
+  color: #fff;
+  padding: 10px 22px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-top: 1.2rem;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+.btn-primary.small:hover {
+  background: #3A2D7F;
+  transform: translateY(-2px);
 }

@@ -1,0 +1,140 @@
+body {
+  background: linear-gradient(135deg, #677BE5 0%, #39447F 96%);
+  color: #2d2d44;
+  font-family: 'Inter', sans-serif;
+}
+
+/* === HERO PRINCIPAL === */
+.hero {
+  text-align: center;
+  color: #fff;
+  margin-top: 4rem;
+}
+
+.hero h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.hero p {
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+  color: #ddd;
+}
+
+/* === TARJETA DE BIENVENIDA === */
+.welcome-card {
+  background: #fff;
+  color: #220D56;
+  border-radius: 1.2rem;
+  padding: 2rem;
+  max-width: 700px;
+  margin: 2.5rem auto;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  text-align: center;
+}
+
+.welcome-card h2 {
+  font-size: 1.8rem;
+  margin-bottom: 0.4rem;
+}
+
+.welcome-card .stats {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  margin: 1.2rem 0;
+}
+
+.welcome-card .stats h3 {
+  font-size: 2rem;
+  color: #220D56;
+}
+
+.btn-primary {
+  background: #220D56;
+  color: #fff;
+  padding: 0.8rem 2rem;
+  border-radius: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+  transition: 0.25s;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  background: #3a1c7a;
+}
+
+/* === SECCIÓN DE OPCIONES === */
+.learning-options {
+  text-align: center;
+  margin-top: 3rem;
+  color: #fff;
+}
+
+.learning-options h2 {
+  font-size: 1.9rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 2rem;
+  justify-content: center;
+  align-items: stretch;
+  padding: 0 2rem;
+}
+
+.option-card {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 1.2rem;
+  padding: 2rem;
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease;
+}
+
+.option-card:hover {
+  transform: translateY(-6px);
+}
+
+.option-card .icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.option-card h3 {
+  font-weight: 700;
+  margin-bottom: 0.6rem;
+}
+
+.option-card p {
+  font-size: 0.95rem;
+  color: #e8e8ff;
+  margin-bottom: 1.4rem;
+}
+
+.btn-secondary {
+  background: #fff;
+  color: #220D56;
+  border-radius: 8px;
+  padding: 0.6rem 1.4rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn-secondary:hover {
+  background: #220D56;
+  color: #fff;
+}

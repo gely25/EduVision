@@ -9,7 +9,6 @@
   <!-- 🎨 Estilos globales -->
   <link rel="stylesheet" href="{% static 'css/base.css' %}">
 
-  <!-- 🎨 Estilos específicos por vista -->
   {% block extra_css %}{% endblock %}
 
   <!-- Tipografía moderna -->
@@ -25,48 +24,57 @@
   <!-- ====== HEADER GLOBAL ====== -->
   <header class="ev-header">
     <div class="ev-container ev-header-inner">
-      <a class="brand" href="{% url 'home' %}">
-        <i class="fa-solid fa-camera"></i> EduVision
-      </a>
 
-      <nav>
+      <!-- 🔹 LOGO (redirige según estado de sesión) -->
+      {% if request.user.is_authenticated %}
+        <a class="brand" href="{% url 'dashboard' %}">
+          <i class="fa-solid fa-camera"></i> EduVision
+        </a>
+      {% else %}
+        <a class="brand" href="{% url 'home' %}">
+          <i class="fa-solid fa-camera"></i> EduVision
+        </a>
+      {% endif %}
+
+      <!-- 🔹 MENÚ PRINCIPAL -->
+      <nav class="main-nav">
         {% if request.user.is_authenticated %}
-          <span class="user-pill">Hola, {{ request.user.username }}</span>
+          <a href="{% url 'dashboard' %}">Inicio</a>
+          <a href="{% url 'flashcards_page' %}">Flashcards</a>
+          <a href="{% url 'start_view' %}">Juego</a>
+          <a href="#">Clasificación</a>
 
-          <!-- 🔒 Logout seguro -->
-          <form id="logout-form" method="post" action="{% url 'logout' %}" style="display:inline;">
-            {% csrf_token %}
-            <button type="submit" class="btn ghost">
-              <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
+          <!-- 👤 MENÚ DE USUARIO -->
+          <div class="user-dropdown">
+            <button class="user-pill" id="userDropdownBtn">
+              <span class="avatar">{{ request.user.username|slice:":1" }}</span>
+              <span class="username">{{ request.user.username }}</span>
+              <i class="fa-solid fa-chevron-down"></i>
             </button>
-          </form>
+
+            <div class="dropdown-menu" id="userDropdownMenu">
+              <form id="logout-form" method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="dropdown-item">
+                  <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
+                </button>
+              </form>
+            </div>
+          </div>
 
         {% else %}
-          {% if request.path == '/accounts/login/' %}
-            <!-- En LOGIN → solo REGISTRARSE -->
-            <a class="btn ghost" href="{% url 'signup' %}">
-              <i class="fa-solid fa-user-plus"></i> Registrarse
-            </a>
-
-          {% elif request.path == '/api/signup/' %}
-            <!-- En SIGNUP → solo INICIAR SESIÓN -->
-            <a class="btn ghost" href="{% url 'login' %}">
-              <i class="fa-solid fa-user"></i> Iniciar sesión
-            </a>
-
-          {% else %}
-            <!-- En HOME o cualquier otra página no autenticada -->
-            <a class="btn ghost" href="{% url 'login' %}">
-              <i class="fa-solid fa-user"></i> Iniciar sesión
-            </a>
-            <a class="btn ghost" href="{% url 'signup' %}">
-              <i class="fa-solid fa-user-plus"></i> Registrarse
-            </a>
-          {% endif %}
+          <!-- 🔒 Usuario no autenticado -->
+          <a class="btn ghost" href="{% url 'login' %}">
+            <i class="fa-solid fa-user"></i> Iniciar sesión
+          </a>
+          <a class="btn ghost" href="{% url 'signup' %}">
+            <i class="fa-solid fa-user-plus"></i> Registrarse
+          </a>
         {% endif %}
       </nav>
     </div>
   </header>
+
 
   <!-- ====== CONTENIDO ====== -->
   <main class="ev-main">
@@ -78,15 +86,16 @@
           {% endfor %}
         </ul>
       {% endif %}
-
       {% block content %}{% endblock %}
     </div>
   </main>
+
 
   <!-- ====== FOOTER ====== -->
   <footer class="ev-footer">
     <div class="ev-container">© {{ now|date:'Y' }} EduVision</div>
   </footer>
+
 
   <!-- ====== JS GLOBAL ====== -->
   <script src="{% static 'js/auth.js' %}"></script>

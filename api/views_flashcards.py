@@ -13,7 +13,8 @@ import json, base64, io
 
 # ------------------------------------------------------
 # 🧩 Añadir nueva flashcard (solo recorte del cuadro TM)
-# ------------------------------------------------------
+from django.db import IntegrityError
+
 @csrf_exempt
 def add_flashcard(request):
     """
@@ -21,6 +22,7 @@ def add_flashcard(request):
     - Usa solo el área del recuadro central (ROI) como imagen base.
     - Traduce automáticamente el nombre del objeto.
     - Ignora casos en que el modelo devuelva "No reconocido" o similar.
+    - Asocia la flashcard al usuario logueado (si lo hay).
     """
     if request.method != "POST":
         return JsonResponse({"error": "Método no permitido"}, status=405)
@@ -38,56 +40,57 @@ def add_flashcard(request):
 
     # 🚫 Evitar crear flashcards si el objeto no fue reconocido
     if palabra.lower() in ["no reconocido", "none", "unknown"]:
-        print(f"⚠️ Objeto no reconocido detectado ('{palabra}'), flashcard no creada.")
-        return JsonResponse(
-            {"error": "Objeto no reconocido, no se puede crear flashcard."},
-            status=400,
-        )
+        return JsonResponse({"error": "Objeto no reconocido, no se puede crear flashcard."}, status=400)
 
     # 🌍 Traducción automática (si no se envía)
     if not traduccion or traduccion == "Traducción pendiente":
         try:
             traduccion = GoogleTranslator(source="en", target="es").translate(palabra)
-        except Exception as e:
+        except Exception:
             traduccion = "Error al traducir"
-            print("❌ Error traduciendo:", e)
-
-    # 🚫 Evitar duplicados
-    if Flashcard.objects.filter(palabra__iexact=palabra).exists():
-        return JsonResponse({"error": "Flashcard ya existe"}, status=400)
 
     # 📸 Obtener frame actual desde la cámara TM
     frame_data = get_tm_base64_frame()
     if not frame_data or "roi" not in frame_data:
-        print(f"⚠️ No se encontró ROI activo para '{palabra}'")
         return JsonResponse({"error": "No hay frame disponible"}, status=404)
 
-    base64_frame = frame_data["roi"]  # ✅ usamos SOLO el recorte (ROI)
+    base64_frame = frame_data["roi"]
+
+    # 🆕 Crear instancia de flashcard (aún no guardada)
     flashcard = Flashcard(palabra=palabra, traduccion=traduccion)
+    if request.user.is_authenticated:
+        flashcard.user = request.user
 
     try:
-        # 🖼️ Decodificar y guardar imagen
+        # 🖼️ Guardar imagen
         img_data = base64_frame.split(",")[1] if "," in base64_frame else base64_frame
         image_bytes = base64.b64decode(img_data)
         image = Image.open(io.BytesIO(image_bytes))
         buffer = io.BytesIO()
         image.save(buffer, format="PNG")
-        flashcard.imagen.save(f"{palabra}.png", ContentFile(buffer.getvalue()), save=True)
-        print(f"✅ Imagen recortada guardada correctamente para '{palabra}'")
-    except Exception as e:
-        print("❌ Error guardando imagen:", e)
-        return JsonResponse({"error": f"Error guardando la imagen: {str(e)}"}, status=500)
+        flashcard.imagen.save(f"{palabra}.png", ContentFile(buffer.getvalue()), save=False)
 
-    flashcard.save()
-    print(f"✅ Flashcard guardada: {flashcard.palabra} ({flashcard.traduccion})")
+        # 💾 Intentar guardar en base de datos
+        flashcard.save()
+        print(f"✅ Flashcard guardada: {palabra} ({traduccion})")
+
+    except IntegrityError:
+        # ⚠️ Si se intenta insertar un duplicado (violación UNIQUE)
+        return JsonResponse({
+            "error": f"La palabra '{palabra}' ya fue agregada previamente."
+        }, status=400)
+
+    except Exception as e:
+        print("❌ Error guardando flashcard:", e)
+        return JsonResponse({"error": f"Ocurrió un error al guardar: {str(e)}"}, status=500)
 
     return JsonResponse({
         "id": flashcard.id,
         "palabra": flashcard.palabra,
         "traduccion": flashcard.traduccion,
-        "imagen": flashcard.imagen.url if flashcard.imagen else ""
+        "imagen": flashcard.imagen.url if flashcard.imagen else "",
+        "usuario": flashcard.user.username if flashcard.user else None
     })
-
 
 # ------------------------------------------------------
 # 📋 Listar todas las flashcards existentes
@@ -134,21 +137,31 @@ def _serialize_card(f: Flashcard):
     }
 
 def flashcards_summary(request):
-    """Devuelve counters y tarjetas pendientes / dominadas."""
+    """Devuelve counters y tarjetas pendientes / dominadas del usuario actual."""
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Usuario no autenticado"}, status=401)
+
     today = timezone.now().date()
-    pending_qs  = Flashcard.objects.filter(next_review__lte=today).order_by("next_review", "palabra")
-    mastered_qs = Flashcard.objects.filter(next_review__gt=today).order_by("palabra")
+    user = request.user
+
+    # 🔹 Solo flashcards del usuario
+    user_cards = Flashcard.objects.filter(user=user)
+
+    # 🔸 Pendientes y Dominadas basadas en next_review
+    pending_qs = user_cards.filter(next_review__lte=today).order_by("next_review", "palabra")
+    mastered_qs = user_cards.filter(next_review__gt=today).order_by("palabra")
 
     data = {
         "counters": {
             "pending": pending_qs.count(),
             "mastered": mastered_qs.count(),
-            "total": Flashcard.objects.count(),
+            "total": user_cards.count(),
         },
         "pending":  [_serialize_card(f) for f in pending_qs],
         "mastered": [_serialize_card(f) for f in mastered_qs],
     }
     return JsonResponse(data)
+
 
 
 def review_flashcards(request):
